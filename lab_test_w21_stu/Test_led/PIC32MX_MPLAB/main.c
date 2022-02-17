@@ -3,9 +3,11 @@
  * File: main.c
  * Description: 
  *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- * Author        	Date      		Comments on this revision
+ * Author               Date           Version      Comments on this revision
  *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- *        
+ * Ezra-Fikru Asfaw     2/17/2022         1.0       Worked on vTask1 by adding case statement for each button. Was trying to figure out the logic behind each button.
+ *                                                  Worked on database by adding structures for each item in the vending machine. I was also trying to figure out how 
+ *                                                  to select specific item from the structure.
  *                            
  *****************************************************************************/
 
