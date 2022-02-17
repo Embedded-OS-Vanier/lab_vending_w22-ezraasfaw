@@ -1,0 +1,85 @@
+## SCL Builder Setup File: Do not edit!!
+
+## VERSION: MPLAB X
+## FORMAT:  v2.00.01
+## DEVICE:  PIC24FJ128GA010
+
+## PINREGACTIONS
+cyc
+No Repeat
+RD6
+RD7
+RD13
+RA7
+--
+0
+1
+1
+1
+1
+--
+&
+## ADVPINREGACTIONS
+--
+&
+--
+COND2
+Any
+
+
+
+0
+cyc
+
+--
+&
+## CLOCK
+&
+## STIMULUSFILE
+
+U2RXREG
+Message
+0
+10
+C:\serge\Vanier\courses\247-611-VA Embedded_ Operating_Systems\W20\Labs\submissions\Lab2_project-04-22-2020-02-08-20\dimitrigio\projects\Embedded_OS\uart.txt
+Pkt
+No
+
+--
+&
+## RESPONSEFILE
+&
+## ASYNCH
+Pin
+RD6
+Pulse Low
+40 ms
+
+3
+--
+Pin
+RD7
+Pulse Low
+40 ms
+
+3
+--
+Pin
+RA7
+Pulse Low
+40 ms
+
+3
+--
+Pin
+RD13
+Pulse Low
+40 ms
+
+3
+--
+&
+## ADVANCEDSCL
+
+1
+&
