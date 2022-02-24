@@ -25,14 +25,10 @@
 
 #define MAX_ITEM 4
 
-
+static int itm; 
+SemaphoreHandle_t xItem;
   
-typedef struct item {
-    char name[100];
-    int qty;
-    int price;
-    int tag;
-} item_t;
+
 
 
 item_t item[MAX_ITEM]={
@@ -43,39 +39,21 @@ item_t item[MAX_ITEM]={
 };
 
 
-WHAT IS THE PURPOSE OF THIS FUNCTION?
-void itemInfo(int selec){
-struct item MtnDew;
-struct item Coke;
-struct item Crush;
-struct item Nestea;
+item_t getItem(int i){ 
+    xSemaphoreTake( xItem, portMAX_DELAY ); 
+    item_t itmTemp;
+    itmTemp = item[i]; // Critical Section 
+    xSemaphoreGive( xItem); 
+    return itmTemp; 
+} 
+        
+//int setItem(int _itm){ 
+//    xSemaphoreTake( xItem, portMAX_DELAY ); 
+//    itm = _itm;
+////    if(itm >= 0)  itemInfo = itm; // Critical Section 
+//    xSemaphoreGive( xItem); 
+//}
 
-if (selec == 0){
-/*MountainDew*/
-strcpy( MtnDew.name, "Mountain Dew");
-MtnDew.price = 5;
-MtnDew.qty = 2;
-}
 
-if (selec == 1){
-/*Cocacola*/
-strcpy( MtnDew.name, "CocaCola");
-Coke.price = 5;
-Coke.qty = 2;
-}
 
-if (selec == 2){
-/*Crush*/
-strcpy( MtnDew.name, "Crush");
-Crush.price = 5;
-Crush.qty = 2;
-}
 
-if (selec == 3){
-/*Nestea*/
-strcpy( MtnDew.name, "Nestea");
-Nestea.price = 5;
-Nestea.qty = 2;
-}
-return;
-}

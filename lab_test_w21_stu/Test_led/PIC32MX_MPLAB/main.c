@@ -9,6 +9,8 @@
  *                                                  Worked on database by adding structures for each item in the vending machine. I was also trying to figure out how 
  *                                                  to select specific item from the structure.
  *                            
+ * Ezra-Fikru Asfaw     2/24/2022         2.0       Worked on database.c and public.h by modifing it so that there is no error displaying.
+ *                                                  Worked on vtask1.c to figure out the logic for the case statement for the button inputs.
  *****************************************************************************/
 
 /* Kernel includes. */
@@ -31,10 +33,11 @@ int main( void )
 	prvSetupHardware();
     //initIO();
     //LCDInit();
-    //initUart1();
+    initUart1();
     //initUart2_wInt();
     
-    //fprintf2(C_UART1, "Hi Uart1\n");
+    
+    fprintf2(C_UART1, "Hi Uart1\n");
     
     /* create tasks here */
     

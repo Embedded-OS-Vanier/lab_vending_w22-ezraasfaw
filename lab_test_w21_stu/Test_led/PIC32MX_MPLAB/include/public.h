@@ -20,7 +20,19 @@
 #define     MAX_ITEM    4
 
 
+typedef struct product {
+    char name[100];
+    int qty;
+    int price;
+    int tag;
+} item_t;
+
 void vStartTask1(void);
 void vStartTask2(void);
-void itemInfo(int selec);
+int getCredit(void);
+int setCredit(int s);
+item_t getItem(int i);
+int setItem(int _itm);
+
+//void itemInfo(int selec);
 #endif /* PUBLIC_H */
