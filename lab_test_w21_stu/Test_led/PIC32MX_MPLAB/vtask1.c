@@ -65,12 +65,13 @@ static void vTask1( void *pvParameters ){
             if(!S3){
             state = SM_S3;
             }
-            if(!S4){
+            else if(!S4){
             state = SM_S4;
             }
-            if(!S6){
+            else if(!S6){
             state = SM_S6;
             }
+            else state = SM_BUTTON;
             break;
         
         case SM_S3:
