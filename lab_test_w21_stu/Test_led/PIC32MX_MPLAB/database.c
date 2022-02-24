@@ -43,7 +43,7 @@ item_t item[MAX_ITEM]={
 };
 
 
-
+WHAT IS THE PURPOSE OF THIS FUNCTION?
 void itemInfo(int selec){
 struct item MtnDew;
 struct item Coke;
