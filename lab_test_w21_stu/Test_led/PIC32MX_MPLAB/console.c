@@ -888,7 +888,9 @@ U2BRG = (PBCLK  / 16 / baudrate) -1 ; for BREGH=0
 */
 // timing and baud rate calculations
 //baud 115200
-#define BRATE   21        // (40000000/16/115200)-1
+//#define BRATE   21        // (40000000/16/115200)-1
+// baud 19200 if fcy = 5MHz
+#define BRATE   15        // (5000000/16/19200)-1
 //baud 9600
 //#define BRATE   	259        // (40000000/16/9600)-1
 //#define U_ENABLE 	0x8008      // enable the UART peripheral (BREGH=1)
