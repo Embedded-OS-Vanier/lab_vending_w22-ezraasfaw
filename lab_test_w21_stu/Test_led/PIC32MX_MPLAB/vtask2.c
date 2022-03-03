@@ -38,9 +38,6 @@ void vStartTask2(void){
       xTaskCreate( vTask2, ( char * ) "Task 2", 240, NULL, 1, NULL );
 }
 
-//void printItem( struct item *ver ) {
-//            printf( "Book title : %s\n", item->name);
-//            printf( "Book author : %s\n", item->price);
 
 
 

@@ -89,8 +89,8 @@
 #define configUSE_IDLE_HOOK						1
 #define configUSE_TICK_HOOK						0
 #define configTICK_RATE_HZ						( ( TickType_t ) 1000 )
-#define configCPU_CLOCK_HZ						( 80000000UL )
-#define configPERIPHERAL_CLOCK_HZ				( 80000000UL )
+#define configCPU_CLOCK_HZ						( 5000000UL )
+#define configPERIPHERAL_CLOCK_HZ				( 5000000UL )
 #define configMAX_PRIORITIES					( 5UL )
 #define configMINIMAL_STACK_SIZE				( 190 )
 #define configISR_STACK_SIZE					( 250 )

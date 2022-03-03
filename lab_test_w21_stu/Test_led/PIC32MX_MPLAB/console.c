@@ -23,7 +23,7 @@
  *          
  *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 #include <xc.h>
-#include "console32.h"
+#include "console.h"
 #include <sys/attribs.h>
 #include <string.h>
 

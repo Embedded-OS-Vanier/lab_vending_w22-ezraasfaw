@@ -24,8 +24,8 @@
 // see file:///C:/Program%20Files/Microchip/xc32/v2.41/docs/config_docs/32mx795f512l.html
  
 #pragma config FPLLMUL = MUL_20
-#pragma config FPLLIDIV = DIV_2
-#pragma config FPLLODIV = DIV_1 
+#pragma config FPLLIDIV = DIV_4
+#pragma config FPLLODIV = DIV_4 
 #pragma config POSCMOD = HS, FNOSC = PRIPLL
 #pragma config FPBDIV = DIV_1  // PBCLK = SYSCLK/DIV_1
 #pragma config FWDTEN =  OFF    // disable

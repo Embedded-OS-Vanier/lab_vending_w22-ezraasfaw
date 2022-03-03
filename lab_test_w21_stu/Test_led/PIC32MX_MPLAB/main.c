@@ -31,17 +31,18 @@ int main( void )
 {
     /* Prepares the hardware */
 	prvSetupHardware();
-    //initIO();
-    //LCDInit();
-    initUart1();
-    //initUart2_wInt();
+    initIO();
+    LCDInit();
+    //initUart1();
+    initUart2_wInt();
     
     
-    fprintf2(C_UART1, "Hi Uart1\n");
+    //fprintf2(C_LCD, "Hi Uart1\n");
     
     /* create tasks here */
     
-
+    vStartTask1();
+    
     vTaskStartScheduler();
 	return 0;
 }
