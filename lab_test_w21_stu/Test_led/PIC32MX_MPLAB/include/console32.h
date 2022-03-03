@@ -26,7 +26,7 @@ extern "C" {
 #include <stdbool.h>
 #include <stdint.h>
 
-//Migration to MPLAB® Harmony from Legacy Peripheral Libraries -- All the Peripheral Library (PLIB) 
+//Migration to MPLABÂ® Harmony from Legacy Peripheral Libraries -- All the Peripheral Library (PLIB) 
 //functions, usually included by plib.h, will be removed from future releases of MPLAB XC32 C/C++ Compiler.
 //        Please refer to the MPLAB Harmony Libraries for new projects. For legacy support, these 
 //        PLIB Libraries will be available for download from:
@@ -56,6 +56,7 @@ extern "C" {
 enum my_fp {
  C_UART1,
  C_UART2,
+ C_UART4,
  C_LCD
 };
 
