@@ -6,27 +6,22 @@
  * FileName:  console.c      
  *
  *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- * Author        	Date               v        Comments on this revision
+ * Author   Date                Comments on this revision
  *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- * SH		11 Janv. 2020   v1.0    Modify console.c for PIC32MX795F512L
- *                                  Macros conflicts: _UARTx becomes C_UARTx and _LCD becomes C_LCD
- *                                  Must set up the simulator properly: properties->simulator->Option categories-> Uartx Option->  check Enable Uartx IO
- *                                  Provide C++ Compatibility in console32.h: #ifdef __cplusplus extern "C" #endif
-  * SH      12 Jan 2021     v1.1    Test Uart2 ISR modify initUart2_wInt() 
- *  SH      8  Feb 2021     v1.2    Got rid of pmp.h.  Static library still needed for  INTEnableSystemMultiVectoredInt()
- *	SH      10  Feb 2021    v1.3	Replace INTEnableSystemMultiVectoredInt() by INTCONbits.MVEC=1; No more library needed
- *          8 March 2021    v1.4	Add void initLCD(void);
- *          13 Sept 2021    v2.0	Add MX3 board compatibility.  Macro MX3 is defined 
- *                                  in properties->xc32-gcc->Processing and messages  
- *                          v2.1    Add call back function _mon_putc ()
- * SH		28 Dec. 2021			The file was renamed console.c.  From now on, it supersedes console32.c. 
+ * SH		4 March 2022        Branch from v2.4. Add mutex and stdio_lock(), stdio_unlock()
  *          
  *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 #include <xc.h>
-#include "console.h"
+#include "include/console.h"
 #include <sys/attribs.h>
 #include <string.h>
 
+/* Kernel includes. */
+#include "FreeRTOS.h"
+#include "task.h"
+#include "queue.h" 
+#include "semphr.h"
+#include "croutine.h"
 /*Global variable section */
 static int stdio = C_UART2;
 /******* LCD section *****************/
@@ -67,11 +62,12 @@ static void Wait(unsigned int B);
 static void pmp_Init(void);
 #endif
 
+#ifndef MICROSTICK_II
 static void LCDHome(void);
 static void LCDL1Home(void);
 static void LCDL2Home(void);
 static void LCDClear(void);
-        
+#endif      
 
 #if defined EXPLORER_16_32
 
@@ -746,7 +742,7 @@ void Wait(unsigned int B)
 }
 #endif
 
-
+#ifndef MICROSTICK_II
 /***************************************************************
 Name:	void DisplayMSG( char *array)
 Description: Dump a string to the current position. If it 
@@ -784,7 +780,7 @@ void LCDPutString( char *array)
      }
 }
 
-
+#endif
 
 /***************************************************************
 Name:	void LCDPos2(unsigned char row)
@@ -901,6 +897,15 @@ U2BRG = (PBCLK  / 16 / baudrate) -1 ; for BREGH=0
  Initialize the UART2 serial port
 **********************************/
 void initUart2( void)
+{
+   U2BRG    = BRATE;    
+   U2MODE    = U_ENABLE;
+   U2STA    = U_TX;
+   TRTS    = 0;        // make RTS output
+   RTS     = 1;        // set RTS default status
+} // initUart2
+
+void Uart2_init( void)
 {
    U2BRG    = BRATE;    
    U2MODE    = U_ENABLE;
@@ -1103,7 +1108,7 @@ void UART2_Write(uint8_t txData)
 //
 //}
 
-   
+
 /***************** Uart1 section************************************/
 
 
@@ -1349,9 +1354,26 @@ void UART_PutString(char szData[])
 
 
 #endif
-
-
 /***** end of UART1 section ******************/
+
+#ifdef MICROSTICK_II
+/* U1BRG (BRATE)
+U2BRG = (PBCLK  / 16 / baudrate) -1 ; for BREGH=0
+*/
+// timing and baud rate calculations
+//baud 115200
+#define BRATE   21        // (40000000/16/115200)-1
+ 	
+void Uart2_init( void)
+{
+   U2BRG    = BRATE;    
+   U2MODE    = 0x8000 ;
+   U2STA    = 0x0400;      // enable transmission
+  // TRTS    = 0;        // make RTS output
+   //RTS     = 1;        // set RTS default status
+} // initUart2
+#endif
+
 
 
 /*******************************************************************************
@@ -1371,6 +1393,7 @@ void UART_PutString(char szData[])
    Output: returns the number of characters transmitted to the console
 
    *******************************************************************************/
+
 int  fprintf2(int mode, char *buffer){
     int len =0;
     unsigned int i;
@@ -1427,6 +1450,34 @@ void set_stdio(int _stdio){
     stdio = _stdio;
 }
 
+// alias
+void stdio_set(int _stdio){
+    stdio = _stdio;
+}
+
+/*Only for RTOS system*/
+static SemaphoreHandle_t mutex_stdio;
+static mutex_created =0;
+
+void stdio_lock(int _stdio){
+    // creates the mutex only once
+    if(mutex_created == 0){
+        mutex_created = 1;
+        mutex_stdio= xSemaphoreCreateMutex();
+    }
+    xSemaphoreTake(mutex_stdio, portMAX_DELAY);
+    stdio = _stdio;
+    return;
+
+}
+void stdio_unlock(int _stdio){
+        // cannot unlock if mutex does not exist yet
+        if(mutex_created == 0)return;
+        
+        stdio = _stdio;
+        xSemaphoreGive(mutex_stdio);
+}
+
  void _mon_putc (char c)
  {
     static int cur_line = 0;
@@ -1441,11 +1492,13 @@ void set_stdio(int _stdio){
             while(U2STAbits.TRMT == 0);
             U2TXREG = c;        
             break;
-        /* Uart2 */
+        /* Uart4 */
+#ifndef MICROSTICK_II
         case C_UART4:
             while(U4STAbits.UTXBF == 1);
             U4TXREG = c;     
-            break;            
+            break; 
+
         /* LCD */
         case C_LCD:
             if (c <= 13){ // a control character
@@ -1462,13 +1515,25 @@ void set_stdio(int _stdio){
                 }
             }
             else { // not a control character
+#endif
 #if defined EXPLORER_16_32
                 LCDPut(c);
-#elif defined MX3
-                LCD_WriteDataByte(c);
-#endif      
             } 
             break;
+#elif defined MX3
+                LCD_WriteDataByte(c);
+            } 
+            break;
+#endif      
+
     }// switch case 
 }
  
+ 
+ void printUart2FromISR(char *str){
+    while(*str != '\0'){
+        while(U2STAbits.TRMT == 0);
+        U2TXREG = *str; 
+        str++;
+    }
+}
