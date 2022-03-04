@@ -275,6 +275,7 @@ void vStartTask1(void){
 					NULL );						/* We are not using the task handle. */
 }
 
+THOSE SETTER-GETTER BELONG TO DATABASE
 int getCredit(void){ 
     xSemaphoreTake( xCredit, portMAX_DELAY ); 
     int s; 
