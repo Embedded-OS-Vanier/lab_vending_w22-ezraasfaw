@@ -14,8 +14,12 @@
  *                                      properties-> libraries-> Add library object File
  *					8 March 2021		Add void initLCD(void);
  * SH				28 Dec. 2021		The file was renamed console.h.  From now on, it supersedes console32.h. 
+ * SH               15 Feb. 2022		Add MICROSTICK_II for Uart2	
+ * SH				21 Feb. 2022		Add printUart2FromISR()
+ * SH				28 Feb. 2022		Add Uart1_init and Uart2_wInt_init macros (Uart2_init already defined in the c file).
+ * SH				4 March 2022		Add stdio_lock and stdio_unlock. Only for RTOS system
  
- *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+ /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 #ifndef __CONSOLE2_H_
 #define __CONSOLE2_H_
 
@@ -54,6 +58,9 @@ extern "C" {
 //#include "peripheral/pmp.h"
     
 //#include "../common/pmp.h"
+
+#define 	Uart1_init			initUart1
+#define 	Uart2_wInt_init		initUart2_wInt	
 
 enum my_fp {
  C_UART1,
@@ -172,6 +179,7 @@ char getc2( void);
 void puts2( char *str );
 void outUint8(unsigned char u8_x);
 void putI8(unsigned char u8_x);
+void Uart2_init( void);
 /**
   Section: Macro Declarations
 */
@@ -299,8 +307,15 @@ void UART_ConfigureUart(unsigned int baud);
 int  fprintf2(int, char *);
 
 void set_stdio(int);
-
 void _mon_putc (char);
+void printUart2FromISR(char *str);
+
+//Only for RTOS system
+void stdio_set(int );// alias
+void stdio_lock(int );
+void stdio_unlock(int);
+
+
 
 /* Provide C++ Compatibility */
 #ifdef __cplusplus
