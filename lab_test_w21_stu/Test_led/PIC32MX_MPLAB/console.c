@@ -1371,7 +1371,6 @@ void UART_PutString(char szData[])
    Output: returns the number of characters transmitted to the console
 
    *******************************************************************************/
-
 int  fprintf2(int mode, char *buffer){
     int len =0;
     unsigned int i;
@@ -1381,39 +1380,44 @@ int  fprintf2(int mode, char *buffer){
     switch(mode){
         case C_UART1:
         /* Uart1 */
-            
-//            for (i = len; i; --i){
-//                UART1_Write(*(char*)buffer++);
-//            }
-            //return(len);
+            for (i = len; i; --i){
+                UART1_Write(*(char*)buffer++);
+            }
+            return(len);
             break;
         /* Uart2 */
         case C_UART2:
-//            while(U2STAbits.TRMT == 0);  
-//                for (i = len; i; --i)
-//                {
-//                    while(U2STAbits.TRMT == 0);
-//                    U2TXREG = *(char*)buffer++;        
-//                }
-                //return(len);
+            while(U2STAbits.TRMT == 0);  
+                for (i = len; i; --i)
+                {
+                    while(U2STAbits.TRMT == 0);
+                    U2TXREG = *(char*)buffer++;        
+                }
+                return(len);
             break;
         /* LCD */
+#ifndef MICROSTICK_II
         case C_LCD:
             LCDL1Home();
             for (i = len; i; --i){
                 c = *(char*)buffer++;
                 if( c== '\n')LCDL2Home();
                 else { 
+#endif
 #if defined EXPLORER_16_32
                 LCDPut(c);
+                                }
+            }
+            break;
 #elif defined MX3
                 LCD_WriteDataByte(c);
+                                }
+            }
+            break;
 #endif
                     
 
-                }
-            }
-            break;
+
     }// switch case 
      return(len);
 }
