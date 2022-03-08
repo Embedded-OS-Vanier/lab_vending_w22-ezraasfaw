@@ -27,7 +27,8 @@
 
 static int itm; 
 SemaphoreHandle_t xItem;
-  
+static int totalCredit; 
+SemaphoreHandle_t xCredit;   
 
 
 
@@ -55,5 +56,18 @@ item_t getItem(int i){
 //}
 
 
+int getCredit(void){ 
+    xSemaphoreTake( xCredit, portMAX_DELAY ); 
+    int s; 
+    s = totalCredit; // Critical Section 
+    xSemaphoreGive( xCredit); 
+    return s; 
+} 
+        
+int setCredit(int s){ 
+    xSemaphoreTake( xCredit, portMAX_DELAY ); 
+    if(s >= 0)  totalCredit = s; // Critical Section 
+    xSemaphoreGive( xCredit); 
+}         
 
 

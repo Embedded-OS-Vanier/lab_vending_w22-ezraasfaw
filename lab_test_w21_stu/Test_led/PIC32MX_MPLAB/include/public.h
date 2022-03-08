@@ -19,6 +19,15 @@
 #define     TEA         3 
 #define     MAX_ITEM    4
 
+#define S3 PORTDbits.RD6 //S3
+#define S4 PORTDbits.RD7 //S4
+#define S6 PORTDbits.RD13 //S6
+
+
+#define BTN1WAIT 10
+#define BTN2WAIT 2000
+
+//#define SIMULATION
 
 typedef struct product {
     char name[100];

@@ -45,12 +45,12 @@
       <itemPath>../initBoard.c</itemPath>
       <itemPath>../ISR_U2Rx.c</itemPath>
       <itemPath>../ConfigPerformance.c</itemPath>
-      <itemPath>../vtask1.c</itemPath>
       <itemPath>../vtask2.c</itemPath>
       <itemPath>../Tick_core.c</itemPath>
       <itemPath>../console32.c</itemPath>
       <itemPath>../adc32.c</itemPath>
       <itemPath>../database.c</itemPath>
+      <itemPath>../taskUI.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
@@ -271,7 +271,7 @@
         <property key="codecoverage.outputfile" value=""/>
         <property key="oscillator.auxfrequency" value="120"/>
         <property key="oscillator.auxfrequencyunit" value="Mega"/>
-        <property key="oscillator.frequency" value="40"/>
+        <property key="oscillator.frequency" value="5"/>
         <property key="oscillator.frequencyunit" value="Mega"/>
         <property key="oscillator.rcfrequency" value="250"/>
         <property key="oscillator.rcfrequencyunit" value="Kilo"/>

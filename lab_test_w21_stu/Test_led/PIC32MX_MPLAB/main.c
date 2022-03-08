@@ -24,6 +24,8 @@
 #include "include/console32.h"
 #include "include/public.h"
 
+
+
 /* Prototypes for the standard FreeRTOS callback/hook functions implemented within this file. */
 void vApplicationStackOverflowHook( TaskHandle_t pxTask, char *pcTaskName );
 
@@ -31,10 +33,18 @@ int main( void )
 {
     /* Prepares the hardware */
 	prvSetupHardware();
+    
+    
+#ifndef SIMULATION
     initIO();
     LCDInit();
-    //initUart1();
+#endif   
+
+    
+#ifdef SIMULATION
+    initUart1();
     initUart2_wInt();
+#endif
     
     
     //fprintf2(C_LCD, "Hi Uart1\n");
@@ -51,7 +61,7 @@ int main( void )
 
 void vApplicationIdleHook( void ){
     while(1){
-        //your code here
+        LATA^=1;
     }
 }
 

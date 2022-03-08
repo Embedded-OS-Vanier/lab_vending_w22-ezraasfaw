@@ -21,7 +21,7 @@ extern "C" {
 #endif
 
 
-#define     SYS_FREQ            80000000 // Running at 80MHz
+#define     SYS_FREQ            100000000 // Running at 80MHz
 //#define     TICKS_PER_SECOND    (SYS_FREQ >> 1)   // The core timer increments once for every two ticks of SYSCLK
 #define     TICKS_PER_SECOND    SYS_FREQ   // The core timer increments once for every two ticks of SYSCLK but the APIs set and get in sysclk ticks.
 /* Macro for some reason does not work with signed int32_t stamp type */
