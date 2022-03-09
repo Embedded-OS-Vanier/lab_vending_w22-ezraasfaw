@@ -23,8 +23,6 @@
 #include <string.h>
 
 
-#define MAX_ITEM 4
-
 static int itm; 
 SemaphoreHandle_t xItem;
 static int totalCredit; 
@@ -70,4 +68,7 @@ int setCredit(int s){
     xSemaphoreGive( xCredit); 
 }         
 
-
+void initmutex(void){
+    xCredit = xSemaphoreCreateMutex();
+    xItem = xSemaphoreCreateMutex();
+}

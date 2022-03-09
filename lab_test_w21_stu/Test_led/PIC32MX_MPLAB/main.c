@@ -33,7 +33,7 @@ int main( void )
 {
     /* Prepares the hardware */
 	prvSetupHardware();
-    
+    initmutex();
     
 #ifndef SIMULATION
     initIO();

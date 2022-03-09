@@ -13,10 +13,10 @@
 
 //#define     CONSOLE     C_LCD
 #define     CONSOLE     C_UART1
-#define     MTNDEW      0
-#define     COKE        1
-#define     CRUSH       2
-#define     TEA         3 
+#define     MTNDEW      1
+#define     COKE        2
+#define     CRUSH       3
+#define     TEA         4 
 #define     MAX_ITEM    4
 
 #define S3 PORTDbits.RD6 //S3
@@ -27,7 +27,7 @@
 #define BTN1WAIT 10
 #define BTN2WAIT 2000
 
-//#define SIMULATION
+#define SIMULATION
 
 typedef struct product {
     char name[100];
@@ -42,6 +42,7 @@ int getCredit(void);
 int setCredit(int s);
 item_t getItem(int i);
 int setItem(int _itm);
+void initmutex(void);
 
 //void itemInfo(int selec);
 #endif /* PUBLIC_H */

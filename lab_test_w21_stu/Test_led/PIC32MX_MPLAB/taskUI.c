@@ -21,10 +21,6 @@
 
 #define TICK_100MS 10000
 
-#define MTNDEW 0
-#define COKE 1
-#define CRUSH 2
-#define TEA 3
 
 #define S3 PORTDbits.RD6 //S3
 #define S4 PORTDbits.RD7 //S4
@@ -158,7 +154,7 @@ void vStartTask1(void){
 #include "include/public.h"
 #include "include/console32.h"
 
-int soda[4] = {MTNDEW, COKE, CRUSH, TEA};
+
 static int totalCredit; 
 SemaphoreHandle_t xCredit; 
 //xCredit = xSemaphoreCreateMutex(); 
@@ -172,8 +168,8 @@ static void vTask1( void *pvParameters ){
 	/* As per most tasks, this task is implemented in an infinite loop. */
 
     char buff[100];
-    int i = 0, temp_c;
-    static enum {SM_INIT,SM_BUTTON,SM_S3, SM_S4,SM_S6} state = SM_INIT;  
+    int i;
+    static enum {SM_INIT,SM_BUTTON,SM_S3, SM_S4,SM_S6,SM_MTN,SM_COKE, SM_CRUSH, SM_TEA} state = SM_INIT;  
     static char* proName, proPrice;
 	for( ;; )
 	{    
@@ -185,14 +181,14 @@ static void vTask1( void *pvParameters ){
             
         case SM_INIT:
             
-            
+            i = 0;
                 #ifndef SIMULATION
                     fprintf2(C_LCD, "            Select items\n");
                 #endif   
 
     
                 #ifdef SIMULATION
-                    fprintf2(C_UART1, "Menu\n");
+                    fprintf2(C_UART1, "            Select items\n");
                 #endif
             
                 vTaskDelay(1000/ portTICK_RATE_MS);
@@ -204,21 +200,12 @@ static void vTask1( void *pvParameters ){
             
         case SM_BUTTON:
             
-            if(S3 == 0){
-            state = SM_S3;
-            }
-            else if(S4 == 0){
-            state = SM_S4;
-            }
-            else if(S6 == 0){
-            state = SM_S6;
-            }
+            if(!S3) state = SM_S3;
+            else if(!S4) state = SM_S4;
+            else if(!S6) state = SM_S6;
             else state = SM_BUTTON;
             break;
         
-            
-            
-            
         case SM_S3:
             vTaskDelay(500/ portTICK_RATE_MS);
                 #ifndef SIMULATION
@@ -227,16 +214,18 @@ static void vTask1( void *pvParameters ){
                     
                 #endif   
 
-    
                 #ifdef SIMULATION
-                    fprintf2(C_UART1, "S3");
+                    fprintf2(C_UART1, "S3                  \n");
                 #endif
-            if (i<=3){
+            if (i<=4){
+                
                 vTaskDelay(1000/ portTICK_RATE_MS);
                 i++;
-                //getItem(i);
-                
-                //proName = product.name;
+                if(i == MTNDEW)state = SM_MTN;
+                else if(i == COKE)state = SM_COKE;
+                else if(i == CRUSH)state = SM_CRUSH;
+                else if(i == TEA)state = SM_TEA;
+                else state = SM_BUTTON;
                 
                 #ifndef SIMULATION
                     sprintf(buff, "%s",product.name);
@@ -245,17 +234,14 @@ static void vTask1( void *pvParameters ){
 
     
                 #ifdef SIMULATION
-                    sprintf(buff, "%s",product.name);
-                    fprintf2(C_UART1, buff);
+//                    sprintf(buff, "%s",product.name);
+//                    fprintf2(C_UART1, buff);
                 #endif
                 
-
-                vTaskDelay(10);
-                state = SM_BUTTON;
             }
             else{
                 i = 0;
-                state = SM_S3;
+                state = SM_BUTTON;
             }
             break;
         
@@ -268,7 +254,7 @@ static void vTask1( void *pvParameters ){
 
     
                 #ifdef SIMULATION
-                    fprintf2(C_UART1, "S4\n");
+                    fprintf2(C_UART1, "S4                  \n");
                 #endif
             
 
@@ -288,7 +274,7 @@ static void vTask1( void *pvParameters ){
 
     
                 #ifdef SIMULATION
-                    fprintf2(C_UART1, "S6\n");
+                    fprintf2(C_UART1, "S6                  \n");
                 #endif
             
             
@@ -298,6 +284,79 @@ static void vTask1( void *pvParameters ){
             else state = SM_BUTTON;
             
             break;
+            
+            
+            case SM_MTN:
+                    product= getItem(MTNDEW);
+                    
+                #ifndef SIMULATION
+                    sprintf(buff, "%s",product.name);
+                    fprintf2(C_LCD, buff);
+                #endif   
+
+    
+                #ifdef SIMULATION
+                    sprintf(buff, "%s",product.name);
+                    fprintf2(C_UART1, buff);
+                #endif
+            
+                    
+                    vTaskDelay(500/ portTICK_RATE_MS);
+                    state = SM_BUTTON;
+   
+                    
+            case SM_COKE:
+                    product= getItem(COKE);
+                    
+                #ifndef SIMULATION
+                    sprintf(buff, "%s",product.name);
+                    fprintf2(C_LCD, buff);
+                #endif   
+
+    
+                #ifdef SIMULATION
+                    sprintf(buff, "%s",product.name);
+                    fprintf2(C_UART1, buff);
+                #endif
+                    
+                    vTaskDelay(500/ portTICK_RATE_MS);
+                    state = SM_BUTTON;
+   
+                    
+            case SM_CRUSH:
+                    product= getItem(CRUSH);
+                    
+                #ifndef SIMULATION
+                    sprintf(buff, "%s",product.name);
+                    fprintf2(C_LCD, buff);
+                #endif   
+
+    
+                #ifdef SIMULATION
+                    sprintf(buff, "%s",product.name);
+                    fprintf2(C_UART1, buff);
+                #endif
+                    
+                    vTaskDelay(500/ portTICK_RATE_MS);
+                    state = SM_BUTTON;
+       
+                    
+            case SM_TEA:
+                    product= getItem(TEA);
+                    
+                #ifndef SIMULATION
+                    sprintf(buff, "%s",product.name);
+                    fprintf2(C_LCD, buff);
+                #endif   
+
+    
+                #ifdef SIMULATION
+                    sprintf(buff, "%s",product.name);
+                    fprintf2(C_UART1, buff);
+                #endif
+                    
+                    vTaskDelay(500/ portTICK_RATE_MS);
+                    state = SM_BUTTON;
         
     }
     }
