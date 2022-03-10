@@ -31,7 +31,7 @@ SemaphoreHandle_t xCredit;
 
 
 item_t item[MAX_ITEM]={
-    {"Mountain Dew",2,5,MTNDEW},
+    {"MtnDew",2,5,MTNDEW},
     {"Coke",2,5,COKE},
     {"Crush",2,5,CRUSH},
     {"Nestea",2,5,TEA}
@@ -46,12 +46,13 @@ item_t getItem(int i){
     return itmTemp; 
 } 
         
-//int setItem(int _itm){ 
-//    xSemaphoreTake( xItem, portMAX_DELAY ); 
-//    itm = _itm;
-////    if(itm >= 0)  itemInfo = itm; // Critical Section 
-//    xSemaphoreGive( xItem); 
-//}
+int setItem(int itm, int qty){ 
+    xSemaphoreTake( xItem, portMAX_DELAY ); 
+    item[itm].qty = qty;
+    
+//    if(itm >= 0)  itemInfo = itm; // Critical Section 
+    xSemaphoreGive( xItem); 
+}
 
 
 int getCredit(void){ 

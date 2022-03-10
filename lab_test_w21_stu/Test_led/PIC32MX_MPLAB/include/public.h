@@ -24,11 +24,10 @@
 #define S6 PORTDbits.RD13 //S6
 
 
-#define BTN1WAIT 10
-#define BTN2WAIT 2000
-#define SEC_3 30*TICK_100MS
 
-#define SIMULATION
+#define SEC_3 30000000
+#define DELAY 1000
+//#define SIMULATION
 
 typedef struct product {
     char name[100];
@@ -42,7 +41,7 @@ void vStartTask2(void);
 int getCredit(void);
 int setCredit(int s);
 item_t getItem(int i);
-int setItem(int _itm);
+int setItem(int itm, int qty);
 void DisplayUI(void);
 void initmutex(void);
 
