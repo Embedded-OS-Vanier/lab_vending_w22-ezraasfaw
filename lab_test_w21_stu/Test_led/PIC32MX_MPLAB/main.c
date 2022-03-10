@@ -33,6 +33,7 @@ int main( void )
 {
     /* Prepares the hardware */
 	prvSetupHardware();
+	//INTCONbits.MVEC=1; 
     initmutex();
     
 #ifndef SIMULATION
