@@ -26,7 +26,9 @@
 
 
 #define SEC_3 30000000
-#define DELAY 1000
+#define SEC_6 60000000
+#define SEC_10 100000000
+#define DELAY 250
 //#define SIMULATION
 
 typedef struct product {
