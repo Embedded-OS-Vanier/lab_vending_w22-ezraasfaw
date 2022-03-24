@@ -231,7 +231,7 @@ static void vTask1( void *pvParameters ){
                     product= getItem(MTNDEW);
                     vTaskDelay(20/ portTICK_RATE_MS);
                     DisplayUI();
-                    vTaskDelay(DELAY/ portTICK_RATE_MS);
+                    vTaskDelay(100/ portTICK_RATE_MS);
                     if (TickGet() - lastTick>= (SEC_3)){
                         
                         state = SM_INIT;
@@ -253,7 +253,7 @@ static void vTask1( void *pvParameters ){
                     product= getItem(COKE);
                     vTaskDelay(20/ portTICK_RATE_MS);
                     DisplayUI();
-                    vTaskDelay(DELAY/ portTICK_RATE_MS);
+                    vTaskDelay(100/ portTICK_RATE_MS);
                     if (TickGet() - lastTick>= (SEC_3)){
                        
                         state = SM_INIT;
@@ -275,7 +275,7 @@ static void vTask1( void *pvParameters ){
                     product= getItem(CRUSH);
                     vTaskDelay(20/ portTICK_RATE_MS);
                     DisplayUI();
-                    vTaskDelay(DELAY/ portTICK_RATE_MS);
+                    vTaskDelay(100/ portTICK_RATE_MS);
                     if (TickGet() - lastTick>= (SEC_3)){
                         
                         state = SM_INIT;
@@ -296,7 +296,7 @@ static void vTask1( void *pvParameters ){
                     product= getItem(TEA);
                     vTaskDelay(20/ portTICK_RATE_MS);
                     DisplayUI();
-                    vTaskDelay(DELAY/ portTICK_RATE_MS);
+                    vTaskDelay(100/ portTICK_RATE_MS);
                     if (TickGet() - lastTick>= (SEC_3)){
                         
                         state = SM_INIT;
