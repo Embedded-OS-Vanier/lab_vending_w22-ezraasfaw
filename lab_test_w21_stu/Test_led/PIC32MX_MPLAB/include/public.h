@@ -20,15 +20,15 @@
 #define     MAX_ITEM    4
 
 #define S3 PORTDbits.RD6 //S3
-#define S4 PORTDbits.RD7 //S4
-#define S6 PORTDbits.RD13 //S6
+#define S4 PORTDbits.RD13 //S4
+#define S6 PORTDbits.RD7 //S6
 
 
 
 #define SEC_3 30000000
 #define SEC_6 60000000
 #define SEC_10 100000000
-#define DELAY 250
+#define DELAY 110
 //#define SIMULATION
 
 typedef struct product {

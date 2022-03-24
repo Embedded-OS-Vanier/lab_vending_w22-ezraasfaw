@@ -1,4 +1,3 @@
-
 /* ***************************************************************************
  * File: vTask1.c
  * Description: to complete
@@ -19,140 +18,8 @@
 #include "include/console32.h"
 #include "include/Tick_core.h"
 
-#define TICK_100MS 10000
 
 
-#define S3 PORTDbits.RD6 //S3
-#define S4 PORTDbits.RD7 //S4
-#define S6 PORTDbits.RD13 //S6
-
-#define IFSTATEMENTCODE
-
-#ifndef IFSTATEMENTCODE
-static int totalCredit; 
-SemaphoreHandle_t xCredit; 
-//xCredit = xSemaphoreCreateMutex(); 
-
-item_t product;
-
-
-/* Private static function declarations */
-static void vTask1( void *pvParameters ){
-    pvParameters = pvParameters ; // This is to get rid of annoying warnings
-	/* As per most tasks, this task is implemented in an infinite loop. */
-    static enum {SM_POLL,SM_ACTION,SM_DELAY, SM_DEB} state = SM_POLL;  
-    static int statePB, lastTick, i, reqFund;
-    static char* proName, proPrice;
-
-	for( ;; )
-	{    
-        //totalCredit = getCredit();
-
-        switch(state){
-          
-        case SM_POLL:
-            
-            fprintf2(C_LCD, "Menu\n\r");
-            statePB= (S6 << 2 | S4 << 1 | S3 )& 0x0007; 
-            if(statePB != 0x0007){
-                state = SM_ACTION;
-            }
-            break;
-            
-        case  SM_ACTION:
-            
-            switch(statePB){
-                lastTick = TickGet();
-                case  0x4:
-                     //some actions due to BTN0
-                    fprintf2(C_UART1, "Select items\n\r");
-                    
-                    if (i<=3){
-                        i++;
-                        getItem(i);
-                        proName = product.name;
-                        //fprintf2(C_UART1, proName);
-                        
-                    }
-                    else{
-                        i = 0;
-                        getItem(i);
-                        proName = product.name;
-                        //fprintf2(C_UART1, proName);
-                    }
-                    state =  SM_DELAY;
-                    break;    
-                    
-                case  0x3:
-                    fprintf2(C_UART1, "s4\n\r");
-                    setCredit(totalCredit + 0.25);
-                    //fprintf2(C_UART1, totalCredit);
-                    state =  SM_DELAY;     
-                    break;  
-                    
-                case  0x5:
-                    fprintf2(C_UART1, "s6\n\r");
-//                    if(totalCredit >= product.price){
-//                        totalCredit = totalCredit - product.price;
-//                        //fprintf2(C_UART1, totalCredit);
-//                    }
-//                    else {
-//                        reqFund = product.price - totalCredit;
-//                        //fprintf2(C_UART1, reqFund);
-//                    }
-                    state =  SM_DELAY;     
-                    break;
-            }// switch statePB
-            
-        case SM_DELAY:
-            if(TickGet() - lastTick>= (TICK_100MS)) {
-                        state =  SM_DEB;
-                        lastTick= TickGet();
-            }
-                    break;
-            
-        case SM_DEB:// Debounce delay
-                    statePB= (S6 << 2 | S4 << 1 | S3 )& 0x0007; // PBs release wait
-                    if(statePB== 0x0007) state =  SM_POLL;
-                    break;    
-          
-    }
-    }
-}
-
-
-
-/* Public function declarations */
-void vStartTask1(void){
-     xTaskCreate(	vTask1,						/* Pointer to the function that implements the task. */
-					( char * ) "Task 1",	/* Text name for the task.  This is to facilitate debugging only. */
-					240,						/* Stack depth in words. */
-					NULL,						/* We are not using the task parameter. */
-					1,							/* This task will run at priority 1. */
-					NULL );						/* We are not using the task handle. */
-}
-
-#endif
-
-#ifdef IFSTATEMENTCODE
-/* ***************************************************************************
- * File: vTask1.c
- * Description: to complete
- *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- * Author        	Date      		Comments on this revision
- *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- *                                  
- *****************************************************************************/
-
-#include <string.h>
-#include <stdio.h>
-/* Scheduler includes. */
-#include "FreeRTOS.h"
-#include "task.h"
-#include "queue.h"
-#include "semphr.h"
-#include "include/public.h"
-#include "include/console32.h"
 
 
 static int totalCredit;
@@ -169,7 +36,7 @@ static void vTask1( void *pvParameters ){
 	/* As per most tasks, this task is implemented in an infinite loop. */
 
     
-    static int i, lastTick, missCredit,qty,drink_no;
+    static int lastTick, missCredit,qty,drink_no;
     static enum {SM_INIT,SM_BUTTON,SM_S3, SM_S4,SM_S6,SM_MTN,SM_COKE, SM_CRUSH, SM_TEA} state = SM_INIT;  
 	for( ;; )
 	{    
@@ -190,121 +57,91 @@ static void vTask1( void *pvParameters ){
 
     
             #ifdef SIMULATION
-                fprintf2(C_UART1, "            Select items\nPress S3++   ");
+                fprintf2(C_UART1, "Select items\nPress S3++   ");
             #endif
             
-            //vTaskDelay(1000/ portTICK_RATE_MS);
-            lastTick= TickGet();
+            vTaskDelay(DELAY/ portTICK_RATE_MS);
             state = SM_BUTTON;
             break;
 
 /////////////////////////Button Selection with Debouncing//////////////////////////
         case SM_BUTTON:
-            
+            drink_no = 0;
             if(!S3) state = SM_S3;
-            //else if(!S4) state = SM_S4;
-//            else if(!S6) {
-//                fprintf2(C_LCD, "Please Select\nItem                     ");
-//            } 
-//            else if(!S6) {
-//                    if (TickGet() - lastTick>= (SEC_3)){
-//                #ifdef SIMULATION
-//                    fprintf2(C_UART1, "Please Select Item                  \n           ");
-//                #endif
-//
-//                #ifndef SIMULATION
-//                    fprintf2(C_LCD, "Please Select\nItem                     ");
-//                #endif
-//                vTaskDelay(DELAY/ portTICK_RATE_MS);
-//                state = SM_BUTTON;
-//                break;
-//                }
-//                
-//                else state = SM_S6; 
-//                
-//                
-//                
-//                
-//                
-//            }
             else state = SM_BUTTON;
             break;
-           
- 
-          
+               
 ///////////////////////////////Drink Selection/////////////////////////////////////
         case SM_S3:
-            //vTaskDelay(DELAY/ portTICK_RATE_MS);
 
-            if (i<=3){
+            vTaskDelay(20/ portTICK_RATE_MS);
+            if (drink_no<=3){
                 
                 
                 
-                if(i == MTNDEW){
-                    i++;
+                if(drink_no == MTNDEW){
+                    
                     state = SM_MTN;
                     lastTick= TickGet();
+                    vTaskDelay(20/ portTICK_RATE_MS);
                     break;
                 }
                 
                 
-                if(i == COKE){
-                    i++;
+                if(drink_no == COKE){
+                    
                     state = SM_COKE;
                     lastTick= TickGet();
+                    vTaskDelay(DELAY/ portTICK_RATE_MS);
                     break;
                 }
-                else if(i == CRUSH){
-                    i++;
+                else if(drink_no == CRUSH){
+                    
                     state = SM_CRUSH;
                     lastTick= TickGet();
+                    vTaskDelay(DELAY/ portTICK_RATE_MS);
                     break;
                 }
                 
-                else if(i == TEA){
-                    i++;
+                else if(drink_no == TEA){
+                    
                     state = SM_TEA;
                     lastTick= TickGet();
+                    vTaskDelay(DELAY/ portTICK_RATE_MS);
                     break;
                 }
-                else state = SM_BUTTON;
+                else state = SM_INIT;
                 
             }
             else{
-                i = 0;
-                state = SM_BUTTON;
+                drink_no = 0;
+                state = SM_INIT;
             }
             break;
  
 ///////////////////////////////////Adding Credit///////////////////////////////////
         case SM_S4:
-            //lastTick= TickGet();
+
             
             if (TickGet() - lastTick>= (SEC_6)){
                 lastTick= TickGet();
                 state = SM_INIT;
                 break;
                     }        
-//                #ifndef SIMULATION
-//                    fprintf2(C_LCD, "S4                  \n");
-//                #endif   
-//
-//    
-//                #ifdef SIMULATION
-//                    fprintf2(C_UART1, "S4                  \n");
-//                #endif
+
             else{
             if((totalCredit < 10)&&(!S4)){
                 vTaskDelay((DELAY)/ portTICK_RATE_MS);
                 totalCredit++;
                 lastTick= TickGet();
                 DisplayUI();
+                vTaskDelay(DELAY/ portTICK_RATE_MS);
                 
             }
             else if (totalCredit >= 10){
                 
                 #ifdef SIMULATION
-                    fprintf2(C_UART1, "Max Credit                  \n           ");
+                    fprintf2(C_UART1, "Max Credit\n");
                 #endif
 
                 #ifndef SIMULATION
@@ -313,34 +150,19 @@ static void vTask1( void *pvParameters ){
             
             }
             }
-            //vTaskDelay(DELAY/ portTICK_RATE_MS);
+
             if(!S3) state = SM_S3;
             else if (!S6) state = SM_S6;
-            //else if (!S4) state = SM_S4;
-            //else state = SM_INIT;
+
             break;
             
 
 ///////////////////////////////////Vending/////////////////////////////////////////
         case SM_S6:
+            vTaskDelay(20/ portTICK_RATE_MS);
 
-//            if (TickGet() - lastTick>= (SEC_6)){
-//                lastTick= TickGet();
-//                state = SM_INIT;
-//                break;
-//            }   
-//            
-////                #ifndef SIMULATION
-////                    fprintf2(C_LCD, "S6                  \n");
-////                #endif   
-////
-////    
-////                #ifdef SIMULATION
-////                    fprintf2(C_UART1, "S6                  \n");
-////                #endif
-//            else{
-//                
-            if(product.qty == 0){
+      
+            if(product.qty <= 0){
     
                 #ifdef SIMULATION
                     fprintf2(C_UART1, "Sorry\nSold out\n");
@@ -349,7 +171,11 @@ static void vTask1( void *pvParameters ){
                 #ifndef SIMULATION
                     fprintf2(C_LCD, "Sorry           \nSold out                     ");
                 #endif
-
+                    if (TickGet() - lastTick>= (SEC_6)){
+                    lastTick= TickGet();
+                    state = SM_INIT;
+                    break;
+                    }
             }
             
             
@@ -357,18 +183,19 @@ static void vTask1( void *pvParameters ){
                 totalCredit = totalCredit - product.price;
                 
                 #ifdef SIMULATION
-                    fprintf2(C_UART1, "Vending...                  \n                ");
+                    fprintf2(C_UART1, "Vending...\n");
                 #endif
 
                 #ifndef SIMULATION
                     fprintf2(C_LCD, "Vending...                  \n                  ");
                 #endif
+                
                 vTaskDelay(2000/ portTICK_RATE_MS);
-                drink_no = i - 1;
+                vTaskDelay(20/ portTICK_RATE_MS);
                 setItem( drink_no, --product.qty);
+                vTaskDelay(DELAY/ portTICK_RATE_MS);
 
-
-
+               // i = 0;
                 state = SM_INIT;
             
                 break;
@@ -377,7 +204,7 @@ static void vTask1( void *pvParameters ){
             else if(totalCredit < product.price){
                 
                 missCredit = product.price - totalCredit;
-                
+                vTaskDelay(20/ portTICK_RATE_MS);
                 #ifdef SIMULATION
                 sprintf(buff, "Insuffi credits\nMissing %dQ",missCredit);
                     fprintf2(C_UART1, buff);
@@ -391,9 +218,8 @@ static void vTask1( void *pvParameters ){
                 
                
                 
-//            } 
             }
-            //vTaskDelay(DELAY/ portTICK_RATE_MS);
+            vTaskDelay(DELAY/ portTICK_RATE_MS);
             if(!S3) state = SM_S3;
             else if (!S4) state = SM_S4;
             
@@ -403,6 +229,7 @@ static void vTask1( void *pvParameters ){
 /////////////////////////////Drink Information/////////////////////////////////////
             case SM_MTN:
                     product= getItem(MTNDEW);
+                    vTaskDelay(20/ portTICK_RATE_MS);
                     DisplayUI();
                     vTaskDelay(DELAY/ portTICK_RATE_MS);
                     if (TickGet() - lastTick>= (SEC_3)){
@@ -412,7 +239,7 @@ static void vTask1( void *pvParameters ){
                     }
                     
                     if (!S3){
-                        i++;
+                        drink_no++;
                         state = SM_COKE;
                         lastTick= TickGet();
                     }
@@ -424,6 +251,7 @@ static void vTask1( void *pvParameters ){
                     
             case SM_COKE:
                     product= getItem(COKE);
+                    vTaskDelay(20/ portTICK_RATE_MS);
                     DisplayUI();
                     vTaskDelay(DELAY/ portTICK_RATE_MS);
                     if (TickGet() - lastTick>= (SEC_3)){
@@ -433,7 +261,7 @@ static void vTask1( void *pvParameters ){
                     }
                     
                     if (!S3){
-                        i++;
+                        drink_no++;
                         state = SM_CRUSH;
                         lastTick= TickGet();
                     }
@@ -445,6 +273,7 @@ static void vTask1( void *pvParameters ){
                     
             case SM_CRUSH:
                     product= getItem(CRUSH);
+                    vTaskDelay(20/ portTICK_RATE_MS);
                     DisplayUI();
                     vTaskDelay(DELAY/ portTICK_RATE_MS);
                     if (TickGet() - lastTick>= (SEC_3)){
@@ -453,7 +282,7 @@ static void vTask1( void *pvParameters ){
                         break;
                     }
                     if (!S3){
-                        i++;
+                        drink_no++;
                         state = SM_TEA;
                         lastTick= TickGet();
                     } 
@@ -465,6 +294,7 @@ static void vTask1( void *pvParameters ){
                     
             case SM_TEA:
                     product= getItem(TEA);
+                    vTaskDelay(20/ portTICK_RATE_MS);
                     DisplayUI();
                     vTaskDelay(DELAY/ portTICK_RATE_MS);
                     if (TickGet() - lastTick>= (SEC_3)){
@@ -473,7 +303,7 @@ static void vTask1( void *pvParameters ){
                         break;
                     }
                     if (!S3){
-                        i=0;
+                        drink_no=0;
                         state = SM_MTN;
                         lastTick= TickGet();
                     } 
@@ -488,6 +318,7 @@ static void vTask1( void *pvParameters ){
 }
 
 void DisplayUI(void){
+                //vTaskDelay(DELAY/ portTICK_RATE_MS);
                 #ifndef SIMULATION
                     sprintf(buff, "%s price:%dQ              \nCdt:%dQ Qty:%d ",product.name, product.price, totalCredit, product.qty);
                     fprintf2(C_LCD, buff);
@@ -495,7 +326,7 @@ void DisplayUI(void){
 
     
                 #ifdef SIMULATION
-                    sprintf(buff, "%s  price: %dQ\n Credit: %dQ",product.name, product.price, totalCredit);
+                    sprintf(buff, "%s price:%dQ              \nCdt:%dQ Qty:%d ",product.name, product.price, totalCredit, product.qty);
                     fprintf2(C_UART1, buff);
                 #endif
 
@@ -510,6 +341,4 @@ void vStartTask1(void){
 					NULL );						/* We are not using the task handle. */
 }
 
-
-#endif 
 
