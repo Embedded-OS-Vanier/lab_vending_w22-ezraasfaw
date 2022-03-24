@@ -11,6 +11,14 @@
  *                            
  * Ezra-Fikru Asfaw     2/24/2022         2.0       Worked on database.c and public.h by modifing it so that there is no error displaying.
  *                                                  Worked on vtask1.c to figure out the logic for the case statement for the button inputs.
+ * 
+ * Ezra-Fikru Asfaw     3/3/2022          3.0 
+ *
+ * Ezra-Fikru Asfaw     3/10/2022         4.0 
+ *  
+ * Ezra-Fikru Asfaw     3/24/2022         5.0      Worked on taskTech.c. I was able to send an input from the consol to a 
+ *                                                 queue which was able to print on UART1
+ * 
  *****************************************************************************/
 
 /* Kernel includes. */
@@ -35,7 +43,7 @@ int main( void )
 	prvSetupHardware();
 	//INTCONbits.MVEC=1; 
     initmutex();
-    
+    vInitQueue();
 #ifndef SIMULATION
     initIO();
     LCDInit();
@@ -52,8 +60,8 @@ int main( void )
     
     /* create tasks here */
     
-    vStartTask1();
-    
+    //vStartTaskUI();
+    vStartTaskTech();
     vTaskStartScheduler();
 	return 0;
 }
@@ -70,6 +78,7 @@ void vApplicationStackOverflowHook( TaskHandle_t pxTask, char *pcTaskName )
 {
     pxTask= pxTask;
     pcTaskName = pcTaskName;
-		for( ;; );
+
+    for( ;; );
 }
 

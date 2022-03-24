@@ -1,10 +1,10 @@
 /* ***************************************************************************
- * File: vTask1.c
+ * File: taskUI.c
  * Description: to complete
  *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  * Author        	Date      		Comments on this revision
  *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- *                                  
+ * Ezra-Fikru Asfaw                                 
  *****************************************************************************/
 
 #include <string.h>
@@ -31,7 +31,7 @@ item_t product;
 
 
 /* Private static function declarations */
-static void vTask1( void *pvParameters ){
+static void vTaskUI( void *pvParameters ){
     pvParameters = pvParameters ; // This is to get rid of annoying warnings
 	/* As per most tasks, this task is implemented in an infinite loop. */
 
@@ -68,6 +68,7 @@ static void vTask1( void *pvParameters ){
         case SM_BUTTON:
             drink_no = 0;
             if(!S3) state = SM_S3;
+            else if(!S4) state = SM_S4;
             else state = SM_BUTTON;
             break;
                
@@ -206,7 +207,7 @@ static void vTask1( void *pvParameters ){
                 missCredit = product.price - totalCredit;
                 vTaskDelay(20/ portTICK_RATE_MS);
                 #ifdef SIMULATION
-                sprintf(buff, "Insuffi credits\nMissing %dQ",missCredit);
+                    sprintf(buff, "Insuffi credits\nMissing %dQ",missCredit);
                     fprintf2(C_UART1, buff);
                 #endif 
                 
@@ -332,8 +333,8 @@ void DisplayUI(void){
 
 }
 /* Public function declarations */
-void vStartTask1(void){
-     xTaskCreate(	vTask1,						/* Pointer to the function that implements the task. */
+void vStartTaskUI(void){
+     xTaskCreate(	vTaskUI,						/* Pointer to the function that implements the task. */
 					( char * ) "Task 1",	/* Text name for the task.  This is to facilitate debugging only. */
 					240,						/* Stack depth in words. */
 					NULL,						/* We are not using the task parameter. */
