@@ -29,6 +29,8 @@ void __ISR( _UART_2_VECTOR, IPL1SOFT) U2RXInterrupt( void){
 		cChar = U2RXREG;
         vSendQueueFromISR(cChar);
 	}
+    
+    
 }
  
 

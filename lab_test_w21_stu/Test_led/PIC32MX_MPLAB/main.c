@@ -51,8 +51,9 @@ int main( void )
 
     
 #ifdef SIMULATION
-    initUart1();
     initUart2_wInt();
+    initUart1();
+    //initUart2_wInt();
 #endif
     
     
