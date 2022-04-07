@@ -53,6 +53,7 @@ item_t getItem(int i);
 int setItem(int itm, int qty);
 void DisplayUI(void);
 void initmutex(void);
+void UItech(void);
 
 
 static void taskTechnician( void *pvParameters);

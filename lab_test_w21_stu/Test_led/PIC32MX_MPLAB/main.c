@@ -19,6 +19,11 @@
  * Ezra-Fikru Asfaw     3/24/2022         5.0      Worked on taskTech.c. I was able to send an input from the consol to a 
  *                                                 queue which was able to print on UART1
  * 
+ * Ezra-Fikru Asfaw     3/31/2022         6.0      Worked on taskTech.c. I was able to send an input from the consol to a 
+ *                                                 queue which was able to print on UART1
+ * Ezra-Fikru Asfaw     3/24/2022         7.0      Worked on taskTech.c. I was able to split the input into a character and 2 digit input. Then, use it to 
+ *                                                 perform some functionality such as loading drink mad retrieving credit.
+ * 
  *****************************************************************************/
 
 /* Kernel includes. */
@@ -56,6 +61,20 @@ int main( void )
     //initUart2_wInt();
 #endif
     
+//    fprintf2(C_LCD, "?Out of order-Temperature issue?");
+//    fprintf2(C_UART1, "Explorer 16/32 Vending Machine\n");
+//    fprintf2(C_UART1, "Enter r to refresh display \n");
+//    fprintf2(C_UART1, "Enter o followed by a 2 digits value between 00 and 99 to load orange bottles\n");
+//    fprintf2(C_UART1, "Enter c followed by a 2 digits value between 00 and 99 to load cherry bottles\n");
+//    fprintf2(C_UART1, "Enter l followed by a 2 digits value between 00 and 99 to load lemon bottles\n");
+//    fprintf2(C_UART1, "Enter t to read fridge temperature\n");
+//    fprintf2(C_UART1, "Enter e when the machine's money is removed\n");
+//    fprintf2(C_UART1, "Enter h to find out the last transaction time (in seconds)\n");
+//    fprintf2(C_UART1, "Enter m to read the amount of quarters currently in the machine\n");
+//    fprintf2(C_UART1, "Enter s to read the soda stock\n");
+//    fprintf2(C_UART1, "Enter p to change soda prices\n");
+//    fprintf2(C_UART1, "Enter k to check out from servicing\n");
+    //vTaskDelay(10);
     
     //fprintf2(C_LCD, "Hi Uart1\n");
     

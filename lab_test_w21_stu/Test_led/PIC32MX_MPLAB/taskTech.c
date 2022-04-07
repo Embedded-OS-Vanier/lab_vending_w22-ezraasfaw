@@ -8,6 +8,7 @@
  *****************************************************************************/
 
 #include <string.h>
+#include <stdlib.h>
 #include <stdio.h>
 /* Scheduler includes. */
 #include "FreeRTOS.h"
@@ -27,7 +28,13 @@ static QueueHandle_t xQueue;
 char rx;
 char rec[10];
 int acsii_value;
-int num;
+int reset;
+int lastTick;
+int digit;
+int i = 0;
+int flag = 0;
+char mode;
+int credit;
 
 item_t product;
 
@@ -36,54 +43,78 @@ item_t product;
 static void taskTechnician( void *pvParameters){
     
     pvParameters = pvParameters ;    // This is to get rid of annoying warnings
-    static int lastTick, i,mode, digit;
-    static enum {SM_MENU, SM_INIT,SM_INPUT_SEPERATION, SM_BUTTON, SM_REFRESH, SM_MTNDEW_LOAD, SM_COKE_LOAD, SM_CRUSH_LOAD, SM_TEA_LOAD,SM_TEMPERATURE, SM_RETRIEVE_MONEY, SM_LAST_TRANS,SM_READ_Q, SM_STOCK,SM_PRICE, SM_EXIT} state = SM_MENU;  
+   
+    static enum { SM_INIT,SM_INPUT_SEPERATION, SM_BUTTON, SM_REFRESH, SM_MTNDEW_LOAD, SM_COKE_LOAD, SM_CRUSH_LOAD, SM_TEA_LOAD,SM_TEMPERATURE, SM_RETRIEVE_MONEY, SM_LAST_TRANS,SM_READ_Q, SM_STOCK,SM_PRICE, SM_EXIT} state = SM_INIT;  
     
 
-    
+    UItech();
     while(1){
 
         switch(state){
-            case SM_MENU:
-                fprintf2(C_LCD, "?Out of order-Temperature issue?");
-                fprintf2(C_UART1, "Explorer 16/32 Vending Machine\n");
-                fprintf2(C_UART1, "Enter r to refresh display \n");
-                fprintf2(C_UART1, "Enter o followed by a 2 digits value between 00 and 99 to load orange bottles\n");
-                fprintf2(C_UART1, "Enter c followed by a 2 digits value between 00 and 99 to load cherry bottles\n");
-                fprintf2(C_UART1, "Enter l followed by a 2 digits value between 00 and 99 to load lemon bottles\n");
-                fprintf2(C_UART1, "Enter t to read fridge temperature\n");
-                fprintf2(C_UART1, "Enter e when the machine's money is removed\n");
-                fprintf2(C_UART1, "Enter h to find out the last transaction time (in seconds)\n");
-                fprintf2(C_UART1, "Enter m to read the amount of quarters currently in the machine\n");
-                fprintf2(C_UART1, "Enter s to read the soda stock\n");
-                fprintf2(C_UART1, "Enter p to change soda prices\n");
-                fprintf2(C_UART1, "Enter k to check out from servicing\n");
-                vTaskDelay(20/ portTICK_RATE_MS);
-                state = SM_INIT;
+//            case SM_MENU:
+//                fprintf2(C_LCD, "?Out of order-Temperature issue?");
+//                fprintf2(C_UART1, "Explorer 16/32 Vending Machine\n");
+//                fprintf2(C_UART1, "Enter r to refresh display \n");
+//                fprintf2(C_UART1, "Enter o followed by a 2 digits value between 00 and 99 to load orange bottles\n");
+//                fprintf2(C_UART1, "Enter c followed by a 2 digits value between 00 and 99 to load cherry bottles\n");
+//                fprintf2(C_UART1, "Enter l followed by a 2 digits value between 00 and 99 to load lemon bottles\n");
+//                fprintf2(C_UART1, "Enter t to read fridge temperature\n");
+//                fprintf2(C_UART1, "Enter e when the machine's money is removed\n");
+//                fprintf2(C_UART1, "Enter h to find out the last transaction time (in seconds)\n");
+//                fprintf2(C_UART1, "Enter m to read the amount of quarters currently in the machine\n");
+//                fprintf2(C_UART1, "Enter s to read the soda stock\n");
+//                fprintf2(C_UART1, "Enter p to change soda prices\n");
+//                fprintf2(C_UART1, "Enter k to check out from servicing\n");
+//                vTaskDelay(10);
+//                state = SM_INIT;
     ////////////////////////////Initialization vending machine ////////////////////////
             case SM_INIT:
+//                if (flag == 0){
                 xQueueReceive(xQueue,&rx, portMAX_DELAY );  
                 sprintf(buff, "%c",rx);
                 fprintf2(C_UART1, buff);
+//                }
+//                else{
                 //_LATA0 ^= 1;// Toggles a LED
-                state = SM_INPUT_SEPERATION;
-                break;   
-            case SM_INPUT_SEPERATION:  
-                if (rx != '\n'){
-                    rec[i] = rx;
-                    i++;
-                }
-                else if (rx == '\n'){
+//                if(xQueueReceiveFromISR(xQueue,&rx,0 ) == 0){
+//                state = SM_INPUT_SEPERATION;
+//                }
+//                break;   
+//            case SM_INPUT_SEPERATION:  
+                if (rx == '\n' || rx == '\r'){
                     i = 0;
+                    //flag = 1;
                     state = SM_BUTTON;
             
                 }
+                else{
+                    
+                    rec[i] = rx;
+                    i++;
+                    }
+                    
+                
+
+                
+//                if (rx != '\n'){
+//                    rec[i] = rx;
+//                    i++;
+//                }
+//                else if (rx == '\n' || rx == '\r'){
+//                    i = 0;
+//                    //flag = 1;
+//                    state = SM_BUTTON;
+//            
+//                }
+//                }
                 break;   
 /////////////////////////Button Selection with Debouncing//////////////////////////
             case SM_BUTTON:
             
+                vTaskDelay(10);
+                
                 mode = rec[0];
-                sprintf(buffn,"d%d%",rec[1],rec[2]);
+                sprintf(buffn,"%c%c",rec[1],rec[2]);
                 digit = atoi(buffn);
             
                 if(mode == 'r') state = SM_REFRESH;
@@ -104,7 +135,8 @@ static void taskTechnician( void *pvParameters){
             
 /////////////////////////////////refresh display///////////////////////////////////           
             case SM_REFRESH:
-                state = SM_MENU;
+                UItech();
+                state = SM_INIT;
                 break;
           
 /////////////////////////////////load MTNDEW drink/////////////////////////////////
@@ -113,37 +145,86 @@ static void taskTechnician( void *pvParameters){
                 product.qty = digit;
                 sprintf(buff, "MTNDEW stock updated\nMTNDEW in stock is now:%d ", product.qty);
                 fprintf2(C_UART1, buff);
+                vTaskDelay(DELAY/ portTICK_RATE_MS);
+                state = SM_INIT;
                 break;
             
 //////////////////////////////////load COKE drink//////////////////////////////////
             case SM_COKE_LOAD:
                 product= getItem(COKE);
                 product.qty = digit;
-                sprintf(buff, "COKE stock updated\nMTNDEW in stock is now:%d ", product.qty);
+                sprintf(buff, "COKE stock updated\nCOKE in stock is now:%d ", product.qty);
                 fprintf2(C_UART1, buff);
+                vTaskDelay(DELAY/ portTICK_RATE_MS);
+                state = SM_INIT;
                 break;
             
 /////////////////////////////////load CRUSH drink//////////////////////////////////
             case SM_CRUSH_LOAD:
                 product= getItem(CRUSH);
                 product.qty = digit;
-                sprintf(buff, "CRUSH stock updated\nMTNDEW in stock is now:%d ", product.qty);
+                sprintf(buff, "CRUSH stock updated\nCRUSH in stock is now:%d ", product.qty);
                 fprintf2(C_UART1, buff);
+                vTaskDelay(DELAY/ portTICK_RATE_MS);
+                state = SM_INIT;
                 break;
             
 //////////////////////////////////load TEA drink///////////////////////////////////
             case SM_TEA_LOAD:
                 product= getItem(TEA);
                 product.qty = digit;
-                sprintf(buff, "TEA stock updated\nMTNDEW in stock is now:%d ", product.qty);
+                sprintf(buff, "TEA stock updated\nTEA in stock is now:%d ", product.qty);
                 fprintf2(C_UART1, buff);
+                vTaskDelay(DELAY/ portTICK_RATE_MS);
+                state = SM_INIT;
                 break;
-            
-///////////////////////////////////////////////////////////////////////////////////
+                
+///////////////////////////////////Temperature/////////////////////////////////////
+//            case SM_TEMPERATURE:
+//
+//                break;
+                
+/////////////////////////////////Retrieve Money/////////////////////////////////////
+            case SM_RETRIEVE_MONEY:
+                credit = getCredit();
+                setCredit(credit = 0);
+                fprintf2(C_UART1, "Retrieve credit\n Credit total is now 0Q");
+                vTaskDelay(DELAY/ portTICK_RATE_MS);
+                
+                break;
+              
+/////////////////////////////////Retrieve Money/////////////////////////////////////
+            case SM_LAST_TRANS:
+                credit = getCredit();
+                int test = setCredit(credit = 0);
+                fprintf2(C_UART1, "Retrieve credit\n Credit total is now 0Q");
+                vTaskDelay(DELAY/ portTICK_RATE_MS);
+                
+                break;
+/////////////////////////////////////////////////////////////////////////////////
 
     
         }
     }        
+}
+
+void UItech(void){
+    
+    fprintf2(C_LCD, "?Out of order-Temperature issue?");
+    fprintf2(C_UART1, "Explorer 16/32 Vending Machine\n");
+    fprintf2(C_UART1, "Enter r to refresh display \n");
+    fprintf2(C_UART1, "Enter o followed by a 2 digits value between 00 and 99 to load orange bottles\n");
+    fprintf2(C_UART1, "Enter c followed by a 2 digits value between 00 and 99 to load cherry bottles\n");
+    fprintf2(C_UART1, "Enter l followed by a 2 digits value between 00 and 99 to load lemon bottles\n");
+    fprintf2(C_UART1, "Enter t to read fridge temperature\n");
+    fprintf2(C_UART1, "Enter e when the machine's money is removed\n");
+    fprintf2(C_UART1, "Enter h to find out the last transaction time (in seconds)\n");
+    fprintf2(C_UART1, "Enter m to read the amount of quarters currently in the machine\n");
+    fprintf2(C_UART1, "Enter s to read the soda stock\n");
+    fprintf2(C_UART1, "Enter p to change soda prices\n");
+    fprintf2(C_UART1, "Enter k to check out from servicing\n");
+    vTaskDelay(DELAY/ portTICK_RATE_MS);
+
 }
 /* Public function declarations */
 void vStartTaskTech(void){
