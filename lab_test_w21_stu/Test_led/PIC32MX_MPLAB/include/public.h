@@ -19,7 +19,7 @@
 
 
 //#define     CONSOLE     C_LCD
-#define     CONSOLE     C_UART1
+//#define     CONSOLE     C_UART1
 #define     MTNDEW      0
 #define     COKE        1
 #define     CRUSH       2
@@ -36,7 +36,8 @@
 #define SEC_6 60000000
 #define SEC_10 100000000
 #define DELAY 110
-#define SIMULATION
+//#define SIMULATION
+#define CONSOLE C_UART2
 
 typedef struct product {
     char name[100];

@@ -54,26 +54,11 @@ int main( void )
     LCDInit();
 #endif   
 
-    
-#ifdef SIMULATION
+
     initUart2_wInt();
     initUart1();
-    //initUart2_wInt();
-#endif
-    
-//    fprintf2(C_LCD, "?Out of order-Temperature issue?");
-//    fprintf2(C_UART1, "Explorer 16/32 Vending Machine\n");
-//    fprintf2(C_UART1, "Enter r to refresh display \n");
-//    fprintf2(C_UART1, "Enter o followed by a 2 digits value between 00 and 99 to load orange bottles\n");
-//    fprintf2(C_UART1, "Enter c followed by a 2 digits value between 00 and 99 to load cherry bottles\n");
-//    fprintf2(C_UART1, "Enter l followed by a 2 digits value between 00 and 99 to load lemon bottles\n");
-//    fprintf2(C_UART1, "Enter t to read fridge temperature\n");
-//    fprintf2(C_UART1, "Enter e when the machine's money is removed\n");
-//    fprintf2(C_UART1, "Enter h to find out the last transaction time (in seconds)\n");
-//    fprintf2(C_UART1, "Enter m to read the amount of quarters currently in the machine\n");
-//    fprintf2(C_UART1, "Enter s to read the soda stock\n");
-//    fprintf2(C_UART1, "Enter p to change soda prices\n");
-//    fprintf2(C_UART1, "Enter k to check out from servicing\n");
+
+
     //vTaskDelay(10);
     
     //fprintf2(C_LCD, "Hi Uart1\n");
