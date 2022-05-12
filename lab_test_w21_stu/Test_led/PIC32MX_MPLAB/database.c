@@ -21,6 +21,7 @@
 #include "include/Tick_core.h"
 #include "include/public.h"
 #include <string.h>
+#include "include/adc32.h"
 
 static int totalCredit; 
 static int itm; 
@@ -35,6 +36,7 @@ SemaphoreHandle_t xCredit;
 SemaphoreHandle_t xTime;  
 SemaphoreHandle_t xTemp;
 SemaphoreHandle_t xStatus;
+SemaphoreHandle_t xPrice;
 
 
 item_t item[MAX_ITEM]={
@@ -82,6 +84,7 @@ void initmutex(void){
     xTime = xSemaphoreCreateMutex();
     xTemp = xSemaphoreCreateMutex();
     xStatus = xSemaphoreCreateMutex();
+    xPrice = xSemaphoreCreateMutex();
 }
 void SetTime(int64_t tempTime){
     xSemaphoreTake(xTime, portMAX_DELAY);  
@@ -132,3 +135,25 @@ int getStatus(void){
     xSemaphoreGive(xStatus);                    
     return finalStatus;                                           
 }
+
+int getPrice(int itm){ 
+    xSemaphoreTake( xPrice, portMAX_DELAY ); 
+    int pcTemp;
+    if (itm == MTNDEW) pcTemp = item[itm].price;
+    else if (itm == COKE) pcTemp = item[itm].price;
+    else if (itm == CRUSH) pcTemp = item[itm].price;
+    else if (itm == TEA) pcTemp = item[itm].price;
+    
+    //pcTemp = item[i]; // Critical Section 
+    xSemaphoreGive( xPrice); 
+    return pcTemp; 
+} 
+        
+void setPrice(int itm, int price){ 
+    xSemaphoreTake( xPrice, portMAX_DELAY ); 
+    item[itm].price = price;
+    
+//    if(itm >= 0)  itemInfo = itm; // Critical Section 
+    xSemaphoreGive( xPrice); 
+}
+

@@ -18,6 +18,7 @@
 #include "include/public.h"
 #include "include/console32.h"
 #include "include/Tick_core.h"
+#include "include/adc32.h"
 
 /*Semaphores and mutexes declarations*/
 //static QueueHandle_t xQueue = NULL;
@@ -62,6 +63,8 @@ static void taskTechnician( void *pvParameters){
                 sprintf(buff, "%c",rx);
                 fprintf2(C_UART2, buff);
 
+                setStatus(1); //on
+                
                 if (rx == '\n' || rx == '\r'){
                     i = 0;
                     state = SM_BUTTON;
@@ -83,19 +86,23 @@ static void taskTechnician( void *pvParameters){
                 mode = rec[0];
                 sprintf(buffn,"%c%c",rec[1],rec[2]);
                 digit = atoi(buffn);
-            
-                if(mode == 'r') state = SM_REFRESH;
-                else if (mode == 'm') state = SM_MTNDEW_LOAD;
-                else if (mode == 'k') state = SM_COKE_LOAD;
-                else if (mode == 'c') state = SM_CRUSH_LOAD;
-                else if (mode == 'i') state = SM_TEA_LOAD;
-                else if (mode == 't') state = SM_TEMPERATURE;
-                else if (mode == 'e') state = SM_RETRIEVE_MONEY;
-                else if (mode == 'h') state = SM_LAST_TRANS;
-                else if (mode == 'q') state = SM_READ_Q;
-                else if (mode == 's') state = SM_STOCK;
-                else if (mode == 'p') state = SM_PRICE;
-                else if (mode == 'x') state = SM_EXIT;
+                if (flag == 0){
+                    if(mode == 'r') state = SM_REFRESH;
+                    else if (mode == 'm') state = SM_MTNDEW_LOAD;
+                    else if (mode == 'k') state = SM_COKE_LOAD;
+                    else if (mode == 'c') state = SM_CRUSH_LOAD;
+                    else if (mode == 'i') state = SM_TEA_LOAD;
+                    else if (mode == 't') state = SM_TEMPERATURE;
+                    else if (mode == 'e') state = SM_RETRIEVE_MONEY;
+                    else if (mode == 'h') state = SM_LAST_TRANS;
+                    else if (mode == 'q') state = SM_READ_Q;
+                    else if (mode == 's') state = SM_STOCK;
+                    else if (mode == 'p') state = SM_PRICE;
+                    else if (mode == 'x') state = SM_EXIT;
+                }
+                else {
+                    state = SM_PRICE;
+                }
             
             
                 break;
@@ -154,7 +161,7 @@ static void taskTechnician( void *pvParameters){
                 break;
                 
 /////////////////////////////////////////////////////////////////////////////////
-            case SM_TEMPERATURE:                                                               
+            case SM_TEMPERATURE:
                 sprintf(buff, "Fridge temperature is  %d  degree\n\r\n\r", getTemp()); 
                 fprintf2(C_UART2, buff);
                 state = SM_MENU;                                                                         
@@ -189,36 +196,50 @@ static void taskTechnician( void *pvParameters){
                 break;
                 
   /////////////////////////////////////////////////////////////////////////////////
-//            case SM_PRICE:
-//                if(rx == 'd'){                                                           
-//                    state = SM_INIT;                                                              
-//                }
-//                else{
-//                    
-//                    sprintf(buffn, "%c%c", rx[2], rx[3]);               
-//                    DrinkPrice = atoi(temp_buffer);                                                         
-//                    
-//                    if(TaskTechnician_rx[0] == 'o' && TaskTechnician_rx[1] == 'p'){
-//                        mutex_SetPriceVM(DrinkPrice, ORANGE);                                                                                                 
-//                        sprintf(buff, "Orange price is now: %dQ.\n\r", mutex_GetPriceVM(ORANGE));      
-//                        fprintf2(C_UART2, buff);                                                        
-//                    }
-//                    else if(TaskTechnician_rx[0] == 'r' && TaskTechnician_rx[1] == 'p'){
-//                        mutex_SetPriceVM(DrinkPrice, RED);                                                                                                             
-//                        sprintf(PrintBuff, "Red price is now: %dQ.\n\r", mutex_GetPriceVM(RED));            
-//                        fprintf2(C_UART2, buff);                                                            
-//                    }
-//                    
-//                    else if(TaskTechnician_rx[0] == 'y' && TaskTechnician_rx[1] == 'y'){
-//                        mutex_SetPriceVM(DrinkPrice, YELLOW);                                                                
-//                        sprintf(PrintBuff, "Yellow price is now: %dQ.\n\r", mutex_GetPriceVM(RED));         
-//                        fprintf2(C_UART2, buff);                                                       
-//                    }
-//                
-//                    vTaskDelay(DELAY/ portTICK_RATE_MS); 
-//                    state = SM_INIT;                                                                   
-//                    break;
-//                }
+            case SM_PRICE:
+                if(flag == 0){   
+                    subUItech();
+                    flag = 1;
+                    state = SM_INIT;                                                              
+                }
+                else{
+                    
+                    //sprintf(buffn, "%c%c", rx[2], rx[3]);               
+                    //DrinkPrice = atoi(temp_buffer);                                                         
+                    
+                    if(mode == 'v'){
+                        setPrice(MTNDEW, digit);                                                                                               
+                        sprintf(buff, "MTNDEW price is now: %dQ.\n\r", getPrice(MTNDEW));      
+                        fprintf2(C_UART2, buff);                                                        
+                    }
+                    else if(mode == 'z'){
+                        setPrice(COKE, digit);                                                                                                             
+                        sprintf(buff, "COKE price is now: %dQ.\n\r", getPrice(COKE));            
+                        fprintf2(C_UART2, buff);                                                            
+                    }
+                    
+                    else if(mode == 'l' ){
+                        setPrice(CRUSH, digit);                                                                 
+                        sprintf(buff, "CRUSH price is now: %dQ.\n\r", getPrice(CRUSH));         
+                        fprintf2(C_UART2, buff);                                                       
+                    }
+                    else if(mode == 'y' ){
+                        setPrice(TEA, digit);                                                              
+                        sprintf(buff, "TEA price is now: %dQ.\n\r", getPrice(TEA));         
+                        fprintf2(C_UART2, buff);                                                       
+                    }
+                    
+                
+                    flag=0;
+                    state = SM_MENU;                                                                   
+                    break;
+                }
+                
+                case SM_EXIT:
+                    setStatus(0);
+                    state = SM_MENU;
+                    break;
+                
 
     
         }
@@ -244,6 +265,23 @@ void UItech(void){
     vTaskDelay(DELAY/ portTICK_RATE_MS);
 
 }
+
+void subUItech(void){
+    
+    //fprintf2(C_LCD, "?Out of order-Temperature issue?");
+    fprintf2(C_UART2, "Explorer 16/32 Vending Machine\n\r");
+    fprintf2(C_UART2, "Enter r to refresh display \n\r");
+    fprintf2(C_UART2, "Enter v followed by a 2 digits value between 00 and 99 to change MTNDEW price\n\r");
+    fprintf2(C_UART2, "Enter z followed by a 2 digits value between 00 and 99 to change COKE price\n\r");
+    fprintf2(C_UART2, "Enter l followed by a 2 digits value between 00 and 99 to change CRUSH price\n\r");
+    fprintf2(C_UART2, "Enter y followed by a 2 digits value between 00 and 99 to change TEA price\n\r");
+    fprintf2(C_UART2, "Enter x to check out from servicing\n\r\n\r");
+    vTaskDelay(DELAY/ portTICK_RATE_MS);
+
+}
+
+
+
 /* Public function declarations */
 void vStartTaskTech(void){
       xTaskCreate( taskTechnician, ( char * ) "Task Technician", 240, NULL, 1, NULL );

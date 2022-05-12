@@ -48,13 +48,22 @@ typedef struct product {
 
 void vStartTaskUI(void);
 void vStartTaskTech(void);
-int getCredit(void);
-int setCredit(int s);
-item_t getItem(int i);
+item_t getItem(int i);       
 int setItem(int itm, int qty);
+int getCredit(void);       
+int setCredit(int s);   
+void SetTime(int64_t tempTime);
+int getTime(void);
+void setTemp(int tempTemp);
+int getTemp(void);
+void setStatus(int tempStatus);
+int getStatus(void);
+int getPrice(int itm);
+void setPrice(int itm, int price);
 void DisplayUI(void);
 void initmutex(void);
 void UItech(void);
+void subUItech(void);
 
 
 static void taskTechnician( void *pvParameters);
@@ -64,3 +73,6 @@ void vInitQueue(void);
 void vSendQueueFromISR(char data);
 
 #endif /* PUBLIC_H */
+
+
+

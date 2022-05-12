@@ -32,21 +32,27 @@
 #include "queue.h" 
 #include "semphr.h"
 #include "croutine.h"
+#include "include/initBoard.h" 
 /* Hardware specific includes. */
 #include "include/ConfigPerformance.h"
 #include "include/console32.h"
 #include "include/public.h"
+#include "include/adc32.h"
+#include <sys/attribs.h>     
 
-
+int rstcnt __attribute__((persistent)); //survives WDTO,BOR,POR and EXTR
 
 /* Prototypes for the standard FreeRTOS callback/hook functions implemented within this file. */
 void vApplicationStackOverflowHook( TaskHandle_t pxTask, char *pcTaskName );
+
+char buffn[100];
 
 int main( void )
 {
     /* Prepares the hardware */
 	prvSetupHardware();
 	//INTCONbits.MVEC=1; 
+    initADC();
     initmutex();
     vInitQueue();
 #ifndef SIMULATION
@@ -63,10 +69,35 @@ int main( void )
     
     //fprintf2(C_LCD, "Hi Uart1\n");
     
+    
+    int count = 10000;
+    while(count--);
+
+//    if(RCONbits.EXTR){
+//        rstcnt= 0;
+//        fprintf2(C_LCD,"\nPWR Reset");
+//        RCONbits.EXTR=0;  
+//        LATAbits.LATA0 ^= 1;       //LED D3
+//    }
+//    
+//    else if(RCONbits.WDTO){ 
+//        sprintf(buffn,"\nWTD reset %d",rstcnt++);
+//        fprintf2(C_LCD,buffn);
+//        RCONbits.WDTO=0;
+//        LATAbits.LATA1 ^= 1;       //LED D4
+//        if (rstcnt> 6){
+//            fprintf2(C_LCD,"\nBoard frozen");
+//            while(1){
+//                WDTCONbits.WDTCLR=1;
+//                LATAbits.LATA2 ^= 1;       //LED D4
+//            }
+//        }
+//    }
     /* create tasks here */
     
     vStartTaskUI();
     vStartTaskTech();
+    vStartTaskTemp();
     vTaskStartScheduler();
 	return 0;
 }
@@ -76,6 +107,7 @@ int main( void )
 void vApplicationIdleHook( void ){
     while(1){
         LATA^=1;
+//        WDTCONbits.WDTCLR=1;
     }
 }
 

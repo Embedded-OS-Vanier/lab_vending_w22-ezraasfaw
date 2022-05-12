@@ -29,6 +29,7 @@
 #pragma config POSCMOD = HS, FNOSC = PRIPLL
 #pragma config FPBDIV = DIV_1  // PBCLK = SYSCLK/DIV_1
 #pragma config FWDTEN =  OFF    // disable
+#pragma config WDTPS =  PS4096
 
 void initIO(void)
 {

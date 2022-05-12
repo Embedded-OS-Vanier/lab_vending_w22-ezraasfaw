@@ -17,6 +17,7 @@
 #include "include/public.h"
 #include "include/console32.h"
 #include "include/Tick_core.h"
+#include "include/adc32.h"
 
 
 
@@ -37,7 +38,7 @@ static void vTaskUI( void *pvParameters ){
 
     
     static int lastTick, missCredit,qty,drink_no;
-    static enum {SM_INIT,SM_BUTTON,SM_S3, SM_S4,SM_S6,SM_MTN,SM_COKE, SM_CRUSH, SM_TEA} state = SM_INIT;  
+    static enum {SM_INIT,SM_BUTTON,SM_S3, SM_S4,SM_S6,SM_MTN,SM_COKE, SM_CRUSH, SM_TEA, SM_STATUS, SM_TEMP} state = SM_INIT;  
 	for( ;; )
 	{    
         
@@ -47,8 +48,7 @@ static void vTaskUI( void *pvParameters ){
 ////////////////////////////Initialization vending machine ////////////////////////
         case SM_INIT:
             
-            
-            
+
             #ifndef SIMULATION
                 fprintf2(C_LCD, "                    \n                      ");
                 fprintf2(C_LCD, "Select items\nPress S3++                      ");
@@ -65,10 +65,14 @@ static void vTaskUI( void *pvParameters ){
 
 /////////////////////////Button Selection with Debouncing//////////////////////////
         case SM_BUTTON:
-            drink_no = 0;
-            if(!S3) state = SM_S3;
-            else if(!S4) state = SM_S4;
-            else state = SM_BUTTON;
+            
+
+                drink_no = 0;
+                if(!S3) state = SM_S3;
+                else if(!S4) state = SM_S4;
+                else state = SM_BUTTON;
+
+            
             break;
                
 ///////////////////////////////Drink Selection/////////////////////////////////////
@@ -314,8 +318,29 @@ static void vTaskUI( void *pvParameters ){
                     else SM_TEA;
                     break;
 ///////////////////////////////////////////////////////////////////////////////////
+            case SM_STATUS:
+                if (getStatus()== 1){
+                    fprintf2(C_LCD, "?Out of order\nTechnician in use?");
+                }
+                else{
+                    state = SM_INIT;
+                }
+                break;
+                
+            case SM_TEMP:
+                
+                if (getTemp() <= 5 || getTemp() >=15){
+                    fprintf2(C_LCD, "?Out of order\nTemperature Issue?");
+                }
+                else{
+                    state = SM_INIT;
+                }
+        
+                break;
         
     }
+        if (getStatus() == 1 )state = SM_STATUS;
+        else if (getTemp() <= 5 || getTemp() >=15) state = SM_TEMP;
     }
 }
 
