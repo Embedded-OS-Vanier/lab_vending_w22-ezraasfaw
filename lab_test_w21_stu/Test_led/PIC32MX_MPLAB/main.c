@@ -56,7 +56,7 @@ int main( void )
 
 
     initUart2_wInt();
-    initUart1();
+    //initUart1();
 
 
     //vTaskDelay(10);
@@ -65,7 +65,7 @@ int main( void )
     
     /* create tasks here */
     
-    //vStartTaskUI();
+    vStartTaskUI();
     vStartTaskTech();
     vTaskStartScheduler();
 	return 0;

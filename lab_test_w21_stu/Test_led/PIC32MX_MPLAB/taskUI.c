@@ -41,10 +41,9 @@ static void vTaskUI( void *pvParameters ){
 	for( ;; )
 	{    
         
-        
+        totalCredit = getCredit();  
         switch(state){
-        
-        totalCredit = getCredit();    
+          
 ////////////////////////////Initialization vending machine ////////////////////////
         case SM_INIT:
             
@@ -134,6 +133,7 @@ static void vTaskUI( void *pvParameters ){
             if((totalCredit < 10)&&(!S4)){
                 vTaskDelay((DELAY)/ portTICK_RATE_MS);
                 totalCredit++;
+                setCredit(totalCredit);
                 lastTick= TickGet();
                 DisplayUI();
                 vTaskDelay(DELAY/ portTICK_RATE_MS);
@@ -182,7 +182,7 @@ static void vTaskUI( void *pvParameters ){
             
             else if(totalCredit >= product.price){
                 totalCredit = totalCredit - product.price;
-                
+                setCredit(totalCredit);
                 #ifdef SIMULATION
                     fprintf2(C_UART1, "Vending...\n");
                 #endif
@@ -194,6 +194,7 @@ static void vTaskUI( void *pvParameters ){
                 vTaskDelay(2000/ portTICK_RATE_MS);
                 vTaskDelay(20/ portTICK_RATE_MS);
                 setItem( drink_no, --product.qty);
+                SetTime(TickGet());
                 vTaskDelay(DELAY/ portTICK_RATE_MS);
 
                // i = 0;

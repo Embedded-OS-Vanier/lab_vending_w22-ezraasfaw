@@ -79,6 +79,9 @@ int setCredit(int s){
 void initmutex(void){
     xCredit = xSemaphoreCreateMutex();
     xItem = xSemaphoreCreateMutex();
+    xTime = xSemaphoreCreateMutex();
+    xTemp = xSemaphoreCreateMutex();
+    xStatus = xSemaphoreCreateMutex();
 }
 void SetTime(int64_t tempTime){
     xSemaphoreTake(xTime, portMAX_DELAY);  

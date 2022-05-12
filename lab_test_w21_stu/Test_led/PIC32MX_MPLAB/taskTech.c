@@ -44,20 +44,20 @@ static void taskTechnician( void *pvParameters){
     
     pvParameters = pvParameters ;    // This is to get rid of annoying warnings
    
-    static enum { SM_MENU,SM_INIT,SM_INPUT_SEPERATION, SM_BUTTON, SM_REFRESH, SM_MTNDEW_LOAD, SM_COKE_LOAD, SM_CRUSH_LOAD, SM_TEA_LOAD,SM_TEMPERATURE, SM_RETRIEVE_MONEY, SM_LAST_TRANS,SM_READ_Q, SM_STOCK,SM_PRICE, SM_EXIT} state = SM_INIT;  
+    static enum { SM_MENU,SM_INIT,SM_INPUT_SEPERATION, SM_BUTTON, SM_REFRESH, SM_MTNDEW_LOAD, SM_COKE_LOAD, SM_CRUSH_LOAD, SM_TEA_LOAD,SM_TEMPERATURE, SM_RETRIEVE_MONEY, SM_LAST_TRANS,SM_READ_Q, SM_STOCK,SM_PRICE, SM_EXIT} state = SM_MENU;  
     
 
     //UItech();
     while(1){
-
+        vTaskDelay(10);
         switch(state){
             case SM_MENU:
                 UItech();
                 state = SM_INIT;
+                break;
     ////////////////////////////Initialization vending machine ////////////////////////
             case SM_INIT:
 //                if (flag == 0){
-                UItech();
                 xQueueReceive(xQueue,&rx, portMAX_DELAY );  
                 sprintf(buff, "%c",rx);
                 fprintf2(C_UART2, buff);
@@ -78,7 +78,7 @@ static void taskTechnician( void *pvParameters){
 /////////////////////////Button Selection with Debouncing//////////////////////////
             case SM_BUTTON:
             
-                vTaskDelay(10);
+                
                 
                 mode = rec[0];
                 sprintf(buffn,"%c%c",rec[1],rec[2]);
@@ -102,82 +102,69 @@ static void taskTechnician( void *pvParameters){
             
 /////////////////////////////////refresh display///////////////////////////////////           
             case SM_REFRESH:
-                UItech();
-                state = SM_INIT;
+                state = SM_MENU;
                 break;
           
 /////////////////////////////////load MTNDEW drink/////////////////////////////////
             case SM_MTNDEW_LOAD:
-                product= getItem(MTNDEW);
-                product.qty = digit;
-                sprintf(buff, "MTNDEW stock updated\nMTNDEW in stock is now:%d ", product.qty);
+                setItem(MTNDEW,digit);
+                sprintf(buff, "MTNDEW stock updated\n\rMTNDEW in stock is now:%d \n\r\n\r", digit);
                 fprintf2(C_UART2, buff);
-                vTaskDelay(DELAY/ portTICK_RATE_MS);
-                state = SM_INIT;
+                state = SM_MENU;
                 break;
             
 //////////////////////////////////load COKE drink//////////////////////////////////
             case SM_COKE_LOAD:
-                product= getItem(COKE);
-                product.qty = digit;
-                sprintf(buff, "COKE stock updated\nCOKE in stock is now:%d ", product.qty);
+                setItem(COKE,digit);
+                sprintf(buff, "COKE stock updated\n\rCOKE in stock is now:%d \n\r\n\r", digit);
                 fprintf2(C_UART2, buff);
-                vTaskDelay(DELAY/ portTICK_RATE_MS);
-                state = SM_INIT;
+                state = SM_MENU;
                 break;
             
 /////////////////////////////////load CRUSH drink//////////////////////////////////
             case SM_CRUSH_LOAD:
-                product= getItem(CRUSH);
-                product.qty = digit;
-                sprintf(buff, "CRUSH stock updated\nCRUSH in stock is now:%d ", product.qty);
+                setItem(CRUSH,digit);
+                sprintf(buff, "CRUSH stock updated\n\rCRUSH in stock is now:%d \n\r\n\r", digit);
                 fprintf2(C_UART2, buff);
-                vTaskDelay(DELAY/ portTICK_RATE_MS);
-                state = SM_INIT;
+                state = SM_MENU;
                 break;
             
 //////////////////////////////////load TEA drink///////////////////////////////////
             case SM_TEA_LOAD:
-                product= getItem(TEA);
-                product.qty = digit;
-                sprintf(buff, "TEA stock updated\nTEA in stock is now:%d ", product.qty);
+                setItem(TEA,digit);
+                sprintf(buff, "TEA stock updated\n\rTEA in stock is now:%d \n\r\n\r", digit);
                 fprintf2(C_UART2, buff);
-                vTaskDelay(DELAY/ portTICK_RATE_MS);
-                state = SM_INIT;
+                state = SM_MENU;
                 break;
                 
                 
 /////////////////////////////////Retrieve Money/////////////////////////////////////
             case SM_RETRIEVE_MONEY:
-                credit = getCredit();
-                setCredit(credit = 0);
-                fprintf2(C_UART2, "Retrieve credit\n Credit total is now 0Q");
-                vTaskDelay(DELAY/ portTICK_RATE_MS);
-                state = SM_INIT;
+                //credit = getCredit();
+                setCredit(0);
+                fprintf2(C_UART2, "Retrieve credit\n\rCredit total is now 0Q\n\r\n\r");
+                state = SM_MENU;
                 break;
               
 /////////////////////////////////Retrieve Money/////////////////////////////////////
             case SM_LAST_TRANS:                                                                       
-                sprintf(buff, "Last transaction happened %d seconds ago\n\r", getTime());  
-                fprintf2(C_UART2, buff);                                                                            
-                vTaskDelay(DELAY/ portTICK_RATE_MS);
-                state = SM_INIT;
+                sprintf(buff, "Last transaction happened %d seconds ago\n\r\n\r", getTime());  
+                fprintf2(C_UART2, buff);
+                state = SM_MENU;
                 break;
                 
 /////////////////////////////////////////////////////////////////////////////////
             case SM_TEMPERATURE:                                                               
-                sprintf(buff, "Fridge temperature is  %d  degree\n\r", getTemp()); 
-                fprintf2(C_UART2, buff);                                                                
-                vTaskDelay(DELAY/ portTICK_RATE_MS); 
-                state = SM_INIT;                                                                         
+                sprintf(buff, "Fridge temperature is  %d  degree\n\r\n\r", getTemp()); 
+                fprintf2(C_UART2, buff);
+                state = SM_MENU;                                                                         
                 break;
                 
  /////////////////////////////////////////////////////////////////////////////////
             case SM_READ_Q:
-                sprintf(buff, " %d Q in the Vending Machine\n\r", getCredit());   
-                fprintf2(C_UART2, buff);                                                            
-                vTaskDelay(DELAY/ portTICK_RATE_MS); 
-                state = SM_INIT;                                                                   
+                sprintf(buff, "%d Q in the Vending Machine\n\r\n\r", getCredit());   
+                fprintf2(C_UART2, buff);
+                state = SM_MENU;                                                                   
                 break;
                 
   /////////////////////////////////////////////////////////////////////////////////
@@ -198,8 +185,7 @@ static void taskTechnician( void *pvParameters){
                 sprintf(buff, "%d cans of TEA in the Vending Machine\n\r\n\r", product.qty ); 
                 fprintf2(C_UART2, buff);  
                 
-                vTaskDelay(DELAY/ portTICK_RATE_MS); 
-                state = SM_INIT;                                                                   
+                state = SM_MENU;                                                                   
                 break;
                 
   /////////////////////////////////////////////////////////////////////////////////
@@ -251,10 +237,10 @@ void UItech(void){
     fprintf2(C_UART2, "Enter t to read fridge temperature\n\r");
     fprintf2(C_UART2, "Enter e when the machine's money is removed\n\r");
     fprintf2(C_UART2, "Enter h to find out the last transaction time (in seconds)\n\r");
-    fprintf2(C_UART2, "Enter m to read the amount of quarters currently in the machine\n\r");
+    fprintf2(C_UART2, "Enter q to read the amount of quarters currently in the machine\n\r");
     fprintf2(C_UART2, "Enter s to read the soda stock\n\r");
     fprintf2(C_UART2, "Enter p to change soda prices\n\r");
-    fprintf2(C_UART2, "Enter k to check out from servicing\n\r");
+    fprintf2(C_UART2, "Enter x to check out from servicing\n\r\n\r");
     vTaskDelay(DELAY/ portTICK_RATE_MS);
 
 }
