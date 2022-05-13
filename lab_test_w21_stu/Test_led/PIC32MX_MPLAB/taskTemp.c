@@ -27,7 +27,9 @@ static void taskTemperature( void *pvParameters){
     
     pvParameters = pvParameters ;    // This is to get rid of annoying warnings
     while(1){
-        vTaskDelay(DELAY/ portTICK_RATE_MS);
+        
+        _LATA1 ^=1 ;
+        vTaskDelay(500/ portTICK_RATE_MS);
         adc = readADC(2);
         temp = adc * 27 /1023;
         temp = temp - 7;

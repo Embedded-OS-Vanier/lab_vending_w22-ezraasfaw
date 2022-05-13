@@ -115,7 +115,8 @@ static void taskTechnician( void *pvParameters){
 /////////////////////////////////load MTNDEW drink/////////////////////////////////
             case SM_MTNDEW_LOAD:
                 setItem(MTNDEW,digit);
-                sprintf(buff, "MTNDEW stock updated\n\rMTNDEW in stock is now:%d \n\r\n\r", digit);
+                product= getItem(MTNDEW);
+                sprintf(buff, "MTNDEW stock updated\n\rMTNDEW in stock is now:%d \n\r\n\r", product.qty);
                 fprintf2(C_UART2, buff);
                 state = SM_MENU;
                 break;
@@ -123,7 +124,8 @@ static void taskTechnician( void *pvParameters){
 //////////////////////////////////load COKE drink//////////////////////////////////
             case SM_COKE_LOAD:
                 setItem(COKE,digit);
-                sprintf(buff, "COKE stock updated\n\rCOKE in stock is now:%d \n\r\n\r", digit);
+                product= getItem(COKE);
+                sprintf(buff, "COKE stock updated\n\rCOKE in stock is now:%d \n\r\n\r", product.qty);
                 fprintf2(C_UART2, buff);
                 state = SM_MENU;
                 break;
@@ -131,7 +133,8 @@ static void taskTechnician( void *pvParameters){
 /////////////////////////////////load CRUSH drink//////////////////////////////////
             case SM_CRUSH_LOAD:
                 setItem(CRUSH,digit);
-                sprintf(buff, "CRUSH stock updated\n\rCRUSH in stock is now:%d \n\r\n\r", digit);
+                product= getItem(CRUSH);
+                sprintf(buff, "CRUSH stock updated\n\rCRUSH in stock is now:%d \n\r\n\r", product.qty);
                 fprintf2(C_UART2, buff);
                 state = SM_MENU;
                 break;
@@ -139,7 +142,8 @@ static void taskTechnician( void *pvParameters){
 //////////////////////////////////load TEA drink///////////////////////////////////
             case SM_TEA_LOAD:
                 setItem(TEA,digit);
-                sprintf(buff, "TEA stock updated\n\rTEA in stock is now:%d \n\r\n\r", digit);
+                product= getItem(TEA);
+                sprintf(buff, "TEA stock updated\n\rTEA in stock is now:%d \n\r\n\r", product.qty);
                 fprintf2(C_UART2, buff);
                 state = SM_MENU;
                 break;
@@ -200,7 +204,8 @@ static void taskTechnician( void *pvParameters){
                 if(flag == 0){   
                     subUItech();
                     flag = 1;
-                    state = SM_INIT;                                                              
+                    state = SM_INIT;
+                    break;
                 }
                 else{
                     
@@ -209,23 +214,23 @@ static void taskTechnician( void *pvParameters){
                     
                     if(mode == 'v'){
                         setPrice(MTNDEW, digit);                                                                                               
-                        sprintf(buff, "MTNDEW price is now: %dQ.\n\r", getPrice(MTNDEW));      
+                        sprintf(buff, "MTNDEW price is now: %dQ.\n\r\n\r", getPrice(MTNDEW));      
                         fprintf2(C_UART2, buff);                                                        
                     }
                     else if(mode == 'z'){
                         setPrice(COKE, digit);                                                                                                             
-                        sprintf(buff, "COKE price is now: %dQ.\n\r", getPrice(COKE));            
+                        sprintf(buff, "COKE price is now: %dQ.\n\r\n\r", getPrice(COKE));            
                         fprintf2(C_UART2, buff);                                                            
                     }
                     
                     else if(mode == 'l' ){
                         setPrice(CRUSH, digit);                                                                 
-                        sprintf(buff, "CRUSH price is now: %dQ.\n\r", getPrice(CRUSH));         
+                        sprintf(buff, "CRUSH price is now: %dQ.\n\r\n\r", getPrice(CRUSH));         
                         fprintf2(C_UART2, buff);                                                       
                     }
                     else if(mode == 'y' ){
                         setPrice(TEA, digit);                                                              
-                        sprintf(buff, "TEA price is now: %dQ.\n\r", getPrice(TEA));         
+                        sprintf(buff, "TEA price is now: %dQ.\n\r\n\r", getPrice(TEA));         
                         fprintf2(C_UART2, buff);                                                       
                     }
                     

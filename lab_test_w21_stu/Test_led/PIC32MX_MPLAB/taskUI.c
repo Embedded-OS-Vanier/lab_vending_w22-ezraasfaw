@@ -41,7 +41,7 @@ static void vTaskUI( void *pvParameters ){
     static enum {SM_INIT,SM_BUTTON,SM_S3, SM_S4,SM_S6,SM_MTN,SM_COKE, SM_CRUSH, SM_TEA, SM_STATUS, SM_TEMP} state = SM_INIT;  
 	for( ;; )
 	{    
-        
+        vTaskDelay(20/ portTICK_RATE_MS);
         totalCredit = getCredit();  
         switch(state){
           
@@ -87,7 +87,7 @@ static void vTaskUI( void *pvParameters ){
                     
                     state = SM_MTN;
                     lastTick= TickGet();
-                    vTaskDelay(20/ portTICK_RATE_MS);
+                    vTaskDelay(400/ portTICK_RATE_MS);
                     break;
                 }
                 
@@ -96,14 +96,14 @@ static void vTaskUI( void *pvParameters ){
                     
                     state = SM_COKE;
                     lastTick= TickGet();
-                    vTaskDelay(DELAY/ portTICK_RATE_MS);
+                    vTaskDelay(400/ portTICK_RATE_MS);
                     break;
                 }
                 else if(drink_no == CRUSH){
                     
                     state = SM_CRUSH;
                     lastTick= TickGet();
-                    vTaskDelay(DELAY/ portTICK_RATE_MS);
+                    vTaskDelay(400/ portTICK_RATE_MS);
                     break;
                 }
                 
@@ -111,7 +111,7 @@ static void vTaskUI( void *pvParameters ){
                     
                     state = SM_TEA;
                     lastTick= TickGet();
-                    vTaskDelay(DELAY/ portTICK_RATE_MS);
+                    vTaskDelay(400/ portTICK_RATE_MS);
                     break;
                 }
                 else state = SM_INIT;
@@ -235,8 +235,15 @@ static void vTaskUI( void *pvParameters ){
 /////////////////////////////Drink Information/////////////////////////////////////
             case SM_MTN:
                     product= getItem(MTNDEW);
-                    vTaskDelay(20/ portTICK_RATE_MS);
-                    DisplayUI();
+                    //vTaskDelay(125/ portTICK_RATE_MS);
+                    if (TickGet() - lastTick>= (MS_500)){
+                       DisplayUI(); 
+                    }
+                    else{
+                        state = SM_MTN;
+                        break;
+                    }
+                    
                     vTaskDelay(100/ portTICK_RATE_MS);
                     if (TickGet() - lastTick>= (SEC_3)){
                         
@@ -257,8 +264,14 @@ static void vTaskUI( void *pvParameters ){
                     
             case SM_COKE:
                     product= getItem(COKE);
-                    vTaskDelay(20/ portTICK_RATE_MS);
-                    DisplayUI();
+                    //vTaskDelay(135/ portTICK_RATE_MS);
+                    if (TickGet() - lastTick>= (MS_500)){
+                       DisplayUI(); 
+                    }
+                    else{
+                        state = SM_COKE;
+                        break;
+                    }
                     vTaskDelay(100/ portTICK_RATE_MS);
                     if (TickGet() - lastTick>= (SEC_3)){
                        
@@ -279,8 +292,14 @@ static void vTaskUI( void *pvParameters ){
                     
             case SM_CRUSH:
                     product= getItem(CRUSH);
-                    vTaskDelay(20/ portTICK_RATE_MS);
-                    DisplayUI();
+                    //vTaskDelay(135/ portTICK_RATE_MS);
+                    if (TickGet() - lastTick>= (MS_500)){
+                       DisplayUI(); 
+                    }
+                    else{
+                        state = SM_CRUSH;
+                        break;
+                    }
                     vTaskDelay(100/ portTICK_RATE_MS);
                     if (TickGet() - lastTick>= (SEC_3)){
                         
@@ -300,8 +319,14 @@ static void vTaskUI( void *pvParameters ){
                     
             case SM_TEA:
                     product= getItem(TEA);
-                    vTaskDelay(20/ portTICK_RATE_MS);
-                    DisplayUI();
+                    //vTaskDelay(135/ portTICK_RATE_MS);
+                    if (TickGet() - lastTick>= (MS_500)){
+                       DisplayUI(); 
+                    }
+                    else{
+                        state = SM_TEA;
+                        break;
+                    }
                     vTaskDelay(100/ portTICK_RATE_MS);
                     if (TickGet() - lastTick>= (SEC_3)){
                         
@@ -319,8 +344,9 @@ static void vTaskUI( void *pvParameters ){
                     break;
 ///////////////////////////////////////////////////////////////////////////////////
             case SM_STATUS:
+                
                 if (getStatus()== 1){
-                    fprintf2(C_LCD, "?Out of order\nTechnician in use?");
+                    fprintf2(C_LCD, "Out of order     \nTechnician in use");
                 }
                 else{
                     state = SM_INIT;
@@ -328,9 +354,10 @@ static void vTaskUI( void *pvParameters ){
                 break;
                 
             case SM_TEMP:
+
                 
-                if (getTemp() <= 5 || getTemp() >=15){
-                    fprintf2(C_LCD, "?Out of order\nTemperature Issue?");
+                if (getTemp() < 0 || getTemp() >8){
+                    fprintf2(C_LCD, "Out of order      \nTemperature Issue");
                 }
                 else{
                     state = SM_INIT;
@@ -340,7 +367,7 @@ static void vTaskUI( void *pvParameters ){
         
     }
         if (getStatus() == 1 )state = SM_STATUS;
-        else if (getTemp() <= 5 || getTemp() >=15) state = SM_TEMP;
+        else if (getTemp() < 0 || getTemp() >8) state = SM_TEMP;
     }
 }
 

@@ -57,7 +57,7 @@ item_t getItem(int i){
         
 int setItem(int itm, int qty){ 
     xSemaphoreTake( xItem, portMAX_DELAY ); 
-    item[itm].qty = qty;
+    item[itm].qty = item[itm].qty + qty;
     
 //    if(itm >= 0)  itemInfo = itm; // Critical Section 
     xSemaphoreGive( xItem); 
@@ -98,7 +98,7 @@ int getTime(void){
     xSemaphoreTake(xTime, portMAX_DELAY);
     lastTick = TickGet();
     TickDiff = lastTick - time;
-    finalTime = TickDiff / TICKS_PER_SECOND;
+    finalTime = TickDiff / (TICKS_PER_SECOND /6);
     xSemaphoreGive(xTime);
     return finalTime;
 
@@ -153,7 +153,6 @@ void setPrice(int itm, int price){
     xSemaphoreTake( xPrice, portMAX_DELAY ); 
     item[itm].price = price;
     
-//    if(itm >= 0)  itemInfo = itm; // Critical Section 
     xSemaphoreGive( xPrice); 
 }
 

@@ -40,8 +40,10 @@
 #include "include/adc32.h"
 #include <sys/attribs.h>     
 
-int rstcnt __attribute__((persistent)); //survives WDTO,BOR,POR and EXTR
+#define DELAY_LOOP_COUNT 100000
 
+int rstcnt __attribute__((persistent)); //survives WDTO,BOR,POR and EXTR
+int ul;
 /* Prototypes for the standard FreeRTOS callback/hook functions implemented within this file. */
 void vApplicationStackOverflowHook( TaskHandle_t pxTask, char *pcTaskName );
 
@@ -107,6 +109,7 @@ int main( void )
 void vApplicationIdleHook( void ){
     while(1){
         LATA^=1;
+        for( ul= 0; ul< DELAY_LOOP_COUNT; ul++ );
 //        WDTCONbits.WDTCLR=1;
     }
 }

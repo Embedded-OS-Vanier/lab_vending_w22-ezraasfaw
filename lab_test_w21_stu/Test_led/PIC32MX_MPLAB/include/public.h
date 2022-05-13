@@ -31,7 +31,7 @@
 #define S6 PORTDbits.RD7 //S6
 
 
-
+#define MS_500 5000000
 #define SEC_3 30000000
 #define SEC_6 60000000
 #define SEC_10 100000000
